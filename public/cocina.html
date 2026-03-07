@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocina - Salero Bar</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">S</div>
+            <nav>
+                <ul>
+                    <li class="active"><i class="fas fa-home"></i>HOME</li>
+                    <li>ORDER HISTORY</li>
+                    <li>PRODUCTS</li>
+                </ul>
+            </nav>
+            <div class="status-container">
+                <span class="status-dot"></span>
+                <p>Restaurant Open</p>
+            </div>
+        </aside>
+
+        <main class="order-list">
+            <header>
+                <div class="header-top">
+                    <h1>ORDER LIST</h1>
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <span class="user-avatar">A</span> <span class="user-name">Admin1_resto</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <i class="fas fa-bell notification-icon"></i>
+                    </div>
+                </div>
+
+                <div class="order-tabs">
+                    <span class="tab active">#215</span>
+                    <span class="tab">#216</span>
+                    <span class="tab">#217</span>
+                </div>
+            </header>
+
+            <section class="cards-container">
+                <article class="order-card" data-order-id="215">
+                    <div class="card-header">
+                        <h2>Order #215</h2>
+
+                        <div class="alert-icon">!</div>
+                    </div>
+
+                    <div class="product-list">
+                        <div class="product-item">
+                            <img src="img/tortilla.png" alt="Tortilla">
+                            <div class="details">
+                                <h3>Tortilla</h3>
+                                <p class="note">CELIACO - Sin cebolla</p>
+                                <p>Hace 10 min</p>
+                            </div>
+                            <span class="qty">Qty: 1</span>
+                        </div>
+                        <div class="product-item">
+                            <img src="img/pimientosPadron.png" alt="Pimientos">
+                            <div class="details">
+                                <h3>Pimientos Padrón</h3>
+                                <p>Hace 8 min</p>
+                            </div>
+                            <span class="qty">Qty: 1</span>
+                        </div>
+                        <div class="product-item">
+                            <img src="img/loin.jpg" alt="Loin">
+                            <div class="details">
+                                <h3>Loin of Vension</h3>
+                                <p>Hace 8 min</p>
+                            </div>
+                            <span class="qty">Qty: 1</span>
+                        </div>
+                    </div>
+                    <div class="total-items">
+                        <hr class="separator">
+                        <div class="info-footer">
+                            <p class="qty-total">x3 Items</p>
+                            <h3 class="table-id">Mesa 3</h3>
+                        </div>
+                        <div class="card-buttons">
+                            <button class="btn-check" onclick="completarPedido('215')">✔</button>
+                            <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
+                        </div>
+                    </div>
+
+
+                </article>
+            </section>
+        </main>
+    </div>
+    <script src="./js/javascript.js"></script>
+</body>
+
+</html>

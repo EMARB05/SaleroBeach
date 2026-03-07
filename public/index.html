@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Salero Beach - Menú Cliente</title>
+    <link rel="stylesheet" href="./css/cliente.css">
+</head>
+<body>
+    <div class="mobile-container">
+       <header class="hero-section">
+    <div class="top-nav" style="justify-content: flex-end;"> <div class="nav-icons">
+            <span class="icon-grid">▤</span>
+            <span class="icon-cart">🛒</span>
+        </div>
+    </div>
+    <h1>Salero Beach</h1>
+</header>
+
+        <section class="search-section">
+            <div class="search-bar">
+                <input type="text" placeholder="Search Food Here">
+                <button class="btn-filter">⚡</button>
+            </div>
+        </section>
+
+        <section class="categories-section">
+            <div class="section-header">
+                <h2>Food Category</h2>
+                <span class="arrow-more">→</span>
+            </div>
+            <div id="cat-food" class="horizontal-scroll"></div>
+        </section>
+
+        <section class="categories-section">
+            <div class="section-header">
+                <h2>Drinks</h2>
+                <span class="arrow-more">→</span>
+            </div>
+            <div id="cat-drinks" class="horizontal-scroll"></div>
+        </section>
+    </div>
+
+    <div id="modal-carrito" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Tu Pedido 🛒</h2>
+            <button onclick="cerrarCarrito()">X</button>
+        </div>
+        <div id="lista-pedido">
+            </div>
+        <div class="modal-footer">
+            <div class="total-container">
+              
+                <span id="precio-total">0.00€</span>
+            </div>
+            <button class="btn-confirmar" onclick="enviarABarra()">Confirmar y Pedir</button>
+        </div>
+    </div>
+</div>
+
+    <script src="./js/productos.js"></script>
+    <script src="./js/cliente.js"></script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+/* Configuración General */
+body {
+    background-color: #1F1D2B; 
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    display: flex;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Sidebar Estilo Salero */
+.sidebar {
+    width: 250px;
+    background-color: #1F1D2B;
+    border-right: 1px solid #393C49;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 10px; /* Un poco de espacio a los lados */
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.logo {
+    font-size: 56px; /* Ajusta el tamaño para que sea grande como en Figma */
+    font-weight: bold;
+    color: white;
+    margin-bottom: 40px; /* Espacio debajo del logo */
+    text-align: center; /* Centra el texto dentro de su contenedor */
+    width: 100%; /* Asegura que el contenedor del logo ocupe todo el ancho disponible */
+}
+
+/* Contenedor de Tarjetas */
+.order-list {
+    flex: 1;
+    padding: 30px;
+}
+.order-tabs {
+    display: flex;
+    gap: 12px;
+}
+
+
+/*Esto es el numero de mesa*/
+.table-id{
+color: aliceblue;
+}
+
+.tab {
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #393C49; /* Gris para los no seleccionados */
+    color: #ABBBC2;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tab.active {
+    background: linear-gradient(135deg, #FF7E5F, #FEB47B); /* El degradado de tu Figma */
+    color: white;
+}
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap; /* Para que las tarjetas se pongan una al lado de otra */
+    gap: 20px;
+}
+
+/* La Tarjeta de Pedido (La que agrandamos) */
+.order-card {
+    background-color: #252836;
+    border-radius: 15px;
+    padding: 20px;
+    width: 300px;
+    min-height: 400px; /* Para que quepan los 3 platos cómodamente */
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.alert-icon {
+    background-color: #EA7C69; /* Naranja de alerta */
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Lista de Productos dentro de la tarjeta */
+.product-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.product-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.details h3 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.note {
+    color: #FFB572; /* Color para las notas como "Celiaco" */
+    font-size: 11px;
+    margin: 5px 0;
+}
+
+/* Botones Inferiores */
+.card-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-check {
+    background: linear-gradient(135deg, #FF7E5F, #FEB47B); /* Gradiente naranja */
+    border: none;
+    flex: 1;
+    width: 100px;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background-color: #EA7C69; /* Rojo suave del diseño */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    width: 100px;
+}
+.contenedorBotones{
+    display: flex;
+    gap: 25px;
+}
+
+
+/* 2. La lista del menú (Alineada a la izquierda) */
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espacio entre cada botón */
+}
+
+/* 3. Cada botón del menú (Apagado) */
+.sidebar nav ul li {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: 0.3s;
+    color: #ABBBC2; /* Gris apagado para el texto */
+    font-weight: 600;
+}
+
+/* 4. El icono (Apagado por defecto) */
+.sidebar nav ul li i {
+    margin-right: 15px; 
+    font-size: 20px;
+    color: #8898AA; /* Icono gris cuando no está activo */
+}
+
+/* 5. CUANDO ESTÁ ACTIVO (La magia) */
+.sidebar nav ul li.active {
+    background-color: rgba(234, 124, 105, 0.1); 
+    color: #ee7220; /* Color naranja sólido para el texto */
+    border: 1px solid #EA7C69; 
+}
+
+/* Icono naranja solo cuando el padre es .active */
+.sidebar nav ul li.active i {
+    color: #ee7220; /* Icono encendido */
+}
+
+.product-item .details {
+    flex-grow: 1; /* Ocupa todo el espacio disponible en el centro */
+}
+
+.qty {
+    color: #ABBBC2;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap; /* Evita que "Qty: 1" se rompa en dos líneas */
+    margin-left: 10px; /* Un pequeño margen de seguridad */
+}
+.separator {
+    border: 0;
+    border-top: 2px solid #393C49;
+    margin: 15px 0;
+}
+
+.info-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    color: #ABBBC2;
+}
+
+.card-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Ajuste para que los botones ocupen el ancho de la tarjeta */
+.btn-check, .btn-cancel {
+    flex: 1; 
+    height: 48px; /* Altura más cómoda para tocar en una pantalla de cocina */
+}
+
+.status-container {
+    margin-top: auto; /* Lo empuja al fondo del sidebar */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    color: #ABBBC2;
+    font-size: 14px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #50D1AA; /* El verde de tu diseño */
+    border-radius: 50%;
+    box-shadow: 0 0 8px #50D1AA; /* Un pequeño brillo */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*estilos pa el usuario*/
+
+header {
+    display: flex;
+    flex-direction: column; /* Apila los elementos uno debajo de otro */
+    gap: 20px; /* Espacio entre el título y las pestañas */
+    margin-bottom: 30px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between; /* Empuja el título a la izquierda y el perfil a la derecha */
+    align-items: center;
+    width: 100%;
+}
+
+
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.user-avatar {
+    background-color: #393C49;
+    color: white;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%; /* Lo hace circular como en Figma */
+    font-weight: bold;
+}
+
+.notification-icon {
+    color: #ABBBC2;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+.btn-completed {
+    background: linear-gradient(135deg, #FF7E5F, #FEB47B);
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: default;
+    text-transform: uppercase;
+}
+
+.order-finished {
+    border: 1px solid #50D1AA; /* Verde sutil para indicar éxito */
+    transition: 0.5s;
+}
+
+/* Colores específicos para la Vista de Barra */
+.bar-view .tab.active, 
+.bar-view .btn-check {
+    background: linear-gradient(135deg, #56CCF2, #2F80ED); /* Azul */
+    border: none;
+}
+
+/* Etiquetas (Badges) para diferenciar platos de bebidas */
+.badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-left: 8px;
+    text-transform: uppercase;
+}
+
+.badge-cocina { background-color: #FF7E5F; color: white; } /* Naranja */
+.badge-barra { background-color: #56CCF2; color: white; }   /* Azul */
+
+/* Botón de Cobrar (Verde Dinero) */
+.btn-pay {
+    background: linear-gradient(135deg, #42E695, #3BB2B8);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
