@@ -16,7 +16,7 @@ let carrito = [];
 async function obtenerProductos() {
     try {
         // Llamamos a la API que creamos en server.js
-        const respuesta = await fetch('http://localhost:3000/api/productos');
+        const respuesta = await fetch('/api/productos');
         productos = await respuesta.json();
         
         console.log("✅ Datos cargados desde MongoDB:", productos);
@@ -198,7 +198,7 @@ async function enviarABarra() {
 };
 
     try {
-        const respuesta = await fetch('http://localhost:3000/api/pedidos', {
+        const respuesta = await fetch('/api/pedidos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
