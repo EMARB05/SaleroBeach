@@ -1,34 +1,12 @@
 // 1. Datos Unificados (Sustituye a 'pedidosActivos')
-const todasLasComandas = [
-    {
-        id: '215',
-        mesa: '3',
-        tiempo: '10 min',
-        articulos: [
-            { nombre: 'Tortilla', cat: 'Cocina', foto: 'img/tortilla.png', nota: 'CELIACO - Sin cebolla', precio: 8.50 },
-            { nombre: 'Caña Estrella', cat: 'Barra', foto: 'img/beer.jpg', precio: 2.20 },
-            { nombre: 'Pimientos Padrón', cat: 'Cocina', foto: 'img/pimientosPadron.png' }
-        ]
-    },
-    {
-        id: '216',
-        mesa: '5',
-        tiempo: '5 min',
-        articulos: [
-            { nombre: 'Copa Rioja', cat: 'Barra', foto: 'img/wine.jpg', precio: 2.50 },
-            { nombre: 'Loin of Venison', cat: 'Cocina', foto: 'img/loin.jpg', precio: 12.00 }
-        ]
-    }
-];
+let todasLasComandas = [];
 
 // 2. Único punto de entrada
 window.onload = () => {
-    //Pa probar  localStorage.clear();
-    renderizarPedidos();
-    comprobarPedidosGuardados();
-    inicializarMenu();
+    obtenerPedidosDeDB();
+    // Actualizar automáticamente cada 15 segundos para ver pedidos nuevos
+    setInterval(obtenerPedidosDeDB, 15000); 
 };
-
 // 3. Función principal de dibujo (Maneja Cocina y Barra)
 function renderizarPedidos(filtroId = null) {
     const contenedor = document.querySelector('.cards-container');
@@ -60,9 +38,12 @@ function renderizarPedidos(filtroId = null) {
                 <div class="product-list">
                     ${pedido.articulos.map(art => `
                         <div class="product-item">
-                            <img src="${art.foto}" alt="${art.nombre}">
+                            <img src="${art.imagen}" alt="${art.nombre}">
                             <div class="details">
-    <h3>${art.nombre} <span class="badge ${art.cat === 'Cocina' ? 'badge-cocina' : 'badge-barra'}">${art.cat}</span></h3>
+    <h3>${art.nombre} <span class="badge ${(art.sub || '').toLowerCase() === 'food' ? 'badge-cocina' : 'badge-barra'}">
+        ${(art.sub || '').toLowerCase() === 'food' ? 'COCINA' : 'BARRA'}
+    </span>
+</h3>
     ${art.nota ? `<p class="note">${art.nota}</p>` : ''}
     
     ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
@@ -148,13 +129,44 @@ function inicializarMenu() {
         });
     });
 }
-function cobrarMesa(id) {
-    const pedido = todasLasComandas.find(p => p.id === id);
-    if (pedido) {
-        // Sumamos todos los precios del array de artículos
-        const total = pedido.articulos.reduce((acc, art) => acc + art.precio, 0);
 
-        alert(`TICKET MESA ${pedido.mesa}\n-------------------\nTotal a cobrar: ${total.toFixed(2)}€`);
-        cancelarPedido(id, true);
+
+// Cambiamos la URL para traer solo PENDIENTES
+async function obtenerPedidosDeDB() {
+    try {
+        const respuesta = await fetch('http://localhost:3000/api/pedidos/pendientes');
+        const pedidosDB = await respuesta.json();
+        
+        todasLasComandas = pedidosDB.map(p => ({
+            id: p._id.slice(-3),
+            mongoId: p._id, // IMPORTANTE: Necesitamos el ID real de Mongo para el PATCH
+            mesa: "3", 
+            articulos: p.items,
+            total: p.total
+        }));
+        renderizarPedidos();
+    } catch (error) {
+        console.error("Error cargando pedidos:", error);
+    }
+}
+
+// Nueva función de COBRAR que avisa al servidor
+async function cobrarMesa(idDisplay) {
+    const pedido = todasLasComandas.find(p => p.id === idDisplay);
+    if (!pedido) return;
+
+    if (confirm(`¿Cobrar ${pedido.total.toFixed(2)}€ de la Mesa ${pedido.mesa}?`)) {
+        try {
+            const respuesta = await fetch(`http://localhost:3000/api/pedidos/${pedido.mongoId}/pagar`, {
+                method: 'PATCH'
+            });
+
+            if (respuesta.ok) {
+                alert("¡Pedido pagado y enviado al historial!");
+                obtenerPedidosDeDB(); // Refrescamos la lista automáticamente
+            }
+        } catch (error) {
+            alert("Error al conectar con el servidor");
+        }
     }
 }

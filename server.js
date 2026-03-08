@@ -67,6 +67,39 @@ app.post('/api/pedidos', async (req, res) => {
     }
 });
 
+
+// SUSTITUYE TU app.get('/api/pedidos') POR ESTA:
+app.get('/api/pedidos/pendientes', async (req, res) => {
+    try {
+        // Buscamos los que NO estén pagados ($ne significa "not equal")
+        // Así te saldrán los nuevos y los que no tengan el campo estado todavía
+        const pedidos = await Pedido.find({ 
+            estado: { $ne: 'Pagado' } 
+        }).sort({ fecha: -1 }); 
+        
+        res.json(pedidos);
+    } catch (error) {
+        console.error("Error en /api/pedidos/pendientes:", error);
+        res.status(500).send("Error al obtener pedidos pendientes");
+    }
+});
+
+// 3. Ruta para el HISTORY (Solo pagados)
+app.get('/api/pedidos/historial', async (req, res) => {
+    const historial = await Pedido.find({ estado: 'Pagado' }).sort({ fecha: -1 });
+    res.json(historial);
+});
+
+// 4. Ruta para CAMBIAR A PAGADO (PATCH)
+app.patch('/api/pedidos/:id/pagar', async (req, res) => {
+    try {
+        await Pedido.findByIdAndUpdate(req.params.id, { estado: 'Pagado' });
+        res.send("Pedido pagado correctamente");
+    } catch (error) {
+        res.status(500).send("Error al procesar el pago");
+    }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Salero Bar funcionando en http://localhost:${PORT}`);
