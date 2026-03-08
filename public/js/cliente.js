@@ -164,18 +164,51 @@ function cerrarVista() {
     document.getElementById('vista-categoria').classList.remove('activo');
 }
 
-function enviarABarra() {
+async function enviarABarra() {
     if (carrito.length === 0) {
         alert("El carrito está vacío, ¡pide algo rico!");
         return;
     }
-    
-    alert("¡Pedido enviado a barra! Enseguida te lo servimos 🍻");
-    
-    // Limpiamos todo
-    carrito = [];
-    document.querySelector('.icon-cart').innerText = `🛒 0`;
-    cerrarCarrito();
+
+    // Calculamos el total antes de enviar
+    const totalPedido = carrito.reduce((sum, item) => sum + item.precio, 0);
+
+    // Preparamos el objeto con la información que pide el servidor
+   const datosPedido = {
+    // Creamos una copia limpia sin los _id de la base de datos
+    items: carrito.map(p => ({
+        nombre: p.nombre,
+        precio: p.precio
+    })), 
+    total: totalPedido
+};
+
+    try {
+        const respuesta = await fetch('http://localhost:3000/api/pedidos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datosPedido)
+        });
+
+        if (respuesta.ok) {
+            alert("¡Pedido enviado a barra! Enseguida te lo servimos 🍻");
+            
+            // Limpiamos todo tras el éxito
+            carrito = [];
+            const iconos = document.querySelectorAll('.icon-cart');
+            iconos.forEach(icono => {
+                icono.innerHTML = `🛒 <span>0</span>`;
+            });
+            cerrarCarrito();
+        } else {
+            alert("Hubo un problema al enviar el pedido. Inténtalo de nuevo.");
+        }
+    } catch (error) {
+        console.error("Error al conectar con el servidor:", error);
+        alert("Parece que el servidor no responde.");
+    }
 }
 
 function filtrarEnDetalle() {

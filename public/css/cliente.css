@@ -383,3 +383,7 @@ body {
 .buscador-detalle::placeholder {
     color: #888;
 }
+
+.categories-section:first-of-type {
+    margin-top: 30px;
+}
