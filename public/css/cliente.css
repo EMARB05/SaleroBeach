@@ -544,6 +544,8 @@ body {
         /* Lo centramos horizontalmente */
         left: 50%;
         transform: translateX(-50%); 
+        animation: none !important;
+        transition: none !important;
         
         /* Ajustamos el padding para que no se vea todo tan pegado a los bordes */
         padding: 40px; 
