@@ -1,24 +1,44 @@
+let productos = [];
 let carrito = [];
+
+
+
+async function obtenerProductos() {
+    try {
+        // Llamamos a la API que creamos en server.js
+        const respuesta = await fetch('http://localhost:3000/api/productos');
+        productos = await respuesta.json();
+        
+        console.log("✅ Datos cargados desde MongoDB:", productos);
+        
+        // Una vez tenemos los datos, pintamos el menú
+        cargarMenu(); 
+    } catch (error) {
+        console.error("❌ Error al conectar con la API:", error);
+    }
+}
 
 // 1. Corregimos la función de cargar menú para que pase el ID como STRING
 function cargarMenu() {
-    const contenedorComida = document.getElementById('cat-food'); // Sección Food
-    const contenedorBebida = document.getElementById('cat-drinks'); // Sección Drinks
+    const contenedorComida = document.getElementById('cat-food');
+    const contenedorBebida = document.getElementById('cat-drinks');
     
+    if(!contenedorComida || !contenedorBebida) return;
+
     contenedorComida.innerHTML = '';
     contenedorBebida.innerHTML = '';
 
     productos.forEach(prod => {
+        // IMPORTANTE: Cambiado prod.img por prod.imagen para que coincida con Compass
         const tarjeta = `
             <div class="product-card">
-                <img src="${prod.img}" alt="${prod.nombre}">
+                <img src="${prod.imagen}" alt="${prod.nombre}">
                 <h3>${prod.nombre}</h3>
                 <span class="price">${prod.precio.toFixed(2)}€</span>
                 <button class="btn-add" onclick="agregarAlCarrito('${prod.id}')">Add Cart</button>
             </div>
         `;
 
-        // Si el producto es "Food", va a la sección de arriba
         if(prod.sub === 'Food') {
             contenedorComida.innerHTML += tarjeta;
         } else {
@@ -28,20 +48,21 @@ function cargarMenu() {
 }
 
 // 2. Corregimos la función de agregar para que coincida con los nuevos IDs
+
 function agregarAlCarrito(idProducto) {
     const producto = productos.find(p => p.id === idProducto);
     
     if (producto) {
         carrito.push(producto);
         
-        // Buscamos el icono
-        const iconoCarrito = document.querySelector('.icon-cart');
+        // Buscamos TODOS los iconos de carrito
+        const iconos = document.querySelectorAll('.icon-cart');
         
-        // ACTUALIZACIÓN SEGURA: Mantenemos el icono y solo cambiamos el texto
-        iconoCarrito.innerHTML = `🛒 <span>${carrito.length}</span>`;
-        
-        // Nos aseguramos de que siga siendo clickeable
-        iconoCarrito.onclick = mostrarCarrito;
+        iconos.forEach(icono => {
+            icono.innerHTML = `🛒 <span>${carrito.length}</span>`;
+            // IMPORTANTE: Les damos a todos la función de abrir
+            icono.onclick = mostrarCarrito; 
+        });
         
         console.log("Añadido:", producto.nombre);
     }
@@ -105,7 +126,7 @@ function cerrarCarrito() {
     document.getElementById('modal-carrito').style.display = 'none';
 }
 
-window.onload = cargarMenu;
+window.onload = obtenerProductos;
 
 // Función para abrir la pantalla de "Ver Todo"
 function verTodo(categoria) {
@@ -113,30 +134,26 @@ function verTodo(categoria) {
     const lista = document.getElementById('lista-detallada');
     const titulo = document.getElementById('titulo-categoria');
 
-    // Cambiamos el título según lo que pulse el usuario
     titulo.innerText = categoria === 'Food' ? 'Food Category' : 'Drinks';
-    
-    // Limpiamos la lista antes de cargar nada
     lista.innerHTML = '';
 
-    // Filtramos los productos según la categoría (Food o Drinks)
+    // Filtramos los productos que trajimos de la DB
     const productosFiltrados = productos.filter(p => p.sub === categoria);
 
-    // Generamos cada fila con el estilo de la captura que me pasaste
     productosFiltrados.forEach(prod => {
+        // Usamos 'imagen' que es como viene de MongoDB
         lista.innerHTML += `
             <div class="item-lista-pro">
-                <img src="${prod.img}" alt="${prod.nombre}">
+                <img src="${prod.imagen}" alt="${prod.nombre}">
                 <div class="info">
                     <h3>${prod.nombre}</h3>
-                    <span>${prod.precio.toFixed(2)}€</span>
+                    <span>${Number(prod.precio).toFixed(2)}€</span>
                 </div>
-                <button onclick="agregarAlCarrito('${prod.id}')">Add Cart</button>
+                <button class="btn-add-detalle" onclick="agregarAlCarrito('${prod.id}')">Add Cart</button>
             </div>
         `;
     });
 
-    // Mostramos la pantalla añadiendo la clase 'activo'
     vista.classList.add('activo');
 }
 
@@ -157,4 +174,14 @@ function enviarABarra() {
     carrito = [];
     document.querySelector('.icon-cart').innerText = `🛒 0`;
     cerrarCarrito();
+}
+
+function filtrarEnDetalle() {
+    const texto = document.querySelector('.buscador-detalle').value.toLowerCase();
+    const items = document.querySelectorAll('.item-lista-pro');
+
+    items.forEach(item => {
+        const nombre = item.querySelector('h3').innerText.toLowerCase();
+        item.style.display = nombre.includes(texto) ? 'flex' : 'none';
+    });
 }
