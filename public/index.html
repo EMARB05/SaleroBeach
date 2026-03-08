@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,18 +9,26 @@
     <title>Salero Beach - Menú Cliente</title>
     <link rel="stylesheet" href="./css/cliente.css">
 </head>
+
 <body>
     <div class="mobile-container">
-       <header class="hero-section">
-    <div class="top-nav" style="justify-content: flex-end;"> <div class="nav-icons">
-            <span class="icon-grid">▤</span>
-            <span class="icon-cart">🛒</span>
+        <header class="hero-section">
+            <div class="top-nav" style="justify-content: flex-end;"> 
+    <div class="nav-icons">
+        <div class="icon-cart-container" onclick="mostrarCarrito()">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span id="cart-count" class="badge">0</span>
         </div>
     </div>
-    <h1>Salero Beach</h1>
-</header>
+</div>
+            <h1>Salero Beach</h1>
+        </header>
 
-       
+
 
         <section class="categories-section">
             <div class="section-header">
@@ -39,40 +48,41 @@
     </div>
 
     <div id="modal-carrito" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Tu Pedido 🛒</h2>
-            <button onclick="cerrarCarrito()">X</button>
-        </div>
-        <div id="lista-pedido">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tu Pedido 🛒</h2>
+                <button onclick="cerrarCarrito()">X</button>
             </div>
-        <div class="modal-footer">
-            <div class="total-container">
-              
-                <span id="precio-total">0.00€</span>
+            <div id="lista-pedido">
             </div>
-            <button class="btn-confirmar" onclick="enviarABarra()">Confirmar y Pedir</button>
-        </div>
-    </div>
-</div>
+            <div class="modal-footer">
+                <div class="total-container">
 
-<div id="vista-categoria" class="pantalla-completa">
-    <div class="header-iconos">
-        <button class="btn-volver" onclick="cerrarVista()">←</button>
-        <div class="iconos-derecha">
-            <span class="icon-menu">☰</span>
-            <span class="icon-cart" onclick="mostrarCarrito()">🛒 0</span>
+                    <span id="precio-total">0.00€</span>
+                </div>
+                <button class="btn-confirmar" onclick="enviarABarra()">Confirmar y Pedir</button>
+            </div>
         </div>
     </div>
 
-    <div class="search-container-detalle">
-        <input type="text" class="buscador-detalle" placeholder="Search Food Here" oninput="filtrarEnDetalle()">
-    </div>
+    <div id="vista-categoria" class="pantalla-completa">
+        <div class="header-iconos">
+            <button class="btn-volver" onclick="cerrarVista()">←</button>
+            <div class="iconos-derecha">
+                <span class="icon-menu">☰</span>
+                <span class="icon-cart" onclick="mostrarCarrito()">🛒 0</span>
+            </div>
+        </div>
 
-    <h2 id="titulo-categoria">Categoría</h2>
-    <div id="lista-detallada"></div>
-</div>
+        <div class="search-container-detalle">
+            <input type="text" class="buscador-detalle" placeholder="Search Food Here" oninput="filtrarEnDetalle()">
+        </div>
+
+        <h2 id="titulo-categoria">Categoría</h2>
+        <div id="lista-detallada"></div>
+    </div>
     <script src="./js/cliente.js"></script>
-    
+
 </body>
+
 </html>

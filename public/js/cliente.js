@@ -57,6 +57,24 @@ function cargarMenu() {
     });
 }
 
+
+
+function actualizarInterfazCarrito() {
+    // Buscamos el badge del nuevo icono SVG
+    const badge = document.getElementById('cart-count');
+    if (badge) {
+        badge.innerText = carrito.length;
+        // Si el carrito está vacío, ocultamos la burbuja roja para que quede más limpio
+        badge.style.display = carrito.length > 0 ? 'flex' : 'none';
+    }
+
+    // Actualizamos también cualquier otro icono de carrito (como el de la vista detallada)
+    const otrosIconos = document.querySelectorAll('.icon-cart');
+    otrosIconos.forEach(icono => {
+        // Mantenemos el formato anterior para compatibilidad con el HTML viejo si existe
+        icono.innerHTML = `🛒 <span>${carrito.length}</span>`;
+    });
+}
 // 2. Corregimos la función de agregar para que coincida con los nuevos IDs
 
 function agregarAlCarrito(idProducto) {
@@ -65,16 +83,10 @@ function agregarAlCarrito(idProducto) {
     if (producto) {
         carrito.push(producto);
         
-        // Buscamos TODOS los iconos de carrito
-        const iconos = document.querySelectorAll('.icon-cart');
+        // Actualizamos la burbuja roja
+        actualizarInterfazCarrito();
         
-        iconos.forEach(icono => {
-            icono.innerHTML = `🛒 <span>${carrito.length}</span>`;
-            // IMPORTANTE: Les damos a todos la función de abrir
-            icono.onclick = mostrarCarrito; 
-        });
-        
-        console.log("Añadido:", producto.nombre);
+        console.log("Añadido al pedido:", producto.nombre);
     }
 }
 
@@ -120,55 +132,18 @@ function mostrarCarrito() {
 function cambiarCantidad(id, cambio) {
     if (cambio === 1) {
         const producto = productos.find(p => p.id === id);
-        carrito.push(producto);
+        if (producto) carrito.push(producto);
     } else {
         const index = carrito.findIndex(p => p.id === id);
-        if (index !== -1) carrito.splice(index, 1);
+        if (index !== -1) {
+            carrito.splice(index, 1);
+        }
     }
     
-    // ACTUALIZACIÓN MULTI-ICONO
-    const iconos = document.querySelectorAll('.icon-cart');
-    iconos.forEach(icono => {
-        icono.innerHTML = `🛒 <span>${carrito.length}</span>`;
-    });
-
+    // Sincronizamos el número del icono y refrescamos el modal
+    actualizarInterfazCarrito();
     mostrarCarrito(); 
 }
-function cerrarCarrito() {
-    document.getElementById('modal-carrito').style.display = 'none';
-}
-
-window.onload = obtenerProductos;
-
-// Función para abrir la pantalla de "Ver Todo"
-function verTodo(categoria) {
-    const vista = document.getElementById('vista-categoria');
-    const lista = document.getElementById('lista-detallada');
-    const titulo = document.getElementById('titulo-categoria');
-
-    titulo.innerText = categoria === 'Food' ? 'Food Category' : 'Drinks';
-    lista.innerHTML = '';
-
-    // Filtramos los productos que trajimos de la DB
-    const productosFiltrados = productos.filter(p => p.sub === categoria);
-
-    productosFiltrados.forEach(prod => {
-        // Usamos 'imagen' que es como viene de MongoDB
-        lista.innerHTML += `
-            <div class="item-lista-pro">
-                <img src="${prod.imagen}" alt="${prod.nombre}">
-                <div class="info">
-                    <h3>${prod.nombre}</h3>
-                    <span>${Number(prod.precio).toFixed(2)}€</span>
-                </div>
-                <button class="btn-add-detalle" onclick="agregarAlCarrito('${prod.id}')">Add Cart</button>
-            </div>
-        `;
-    });
-
-    vista.classList.add('activo');
-}
-
 // Función para cerrar y volver al menú principal
 function cerrarVista() {
     document.getElementById('vista-categoria').classList.remove('activo');
@@ -176,45 +151,36 @@ function cerrarVista() {
 
 async function enviarABarra() {
     if (carrito.length === 0) {
-        alert("El carrito está vacío, ¡pide algo rico!");
+        alert("El carrito está vacío, ¡pide algo rico! 🌮");
         return;
     }
 
-    // Calculamos el total antes de enviar
     const totalPedido = carrito.reduce((sum, item) => sum + item.precio, 0);
 
-    // Preparamos el objeto con la información que pide el servidor
-   const datosPedido = {
-    mesa: mesaActual,
-    // Creamos una copia limpia sin los _id de la base de datos
-    items: carrito.map(p => ({
-
-        nombre: p.nombre,
-        precio: p.precio,
-        imagen: p.imagen, // ✅ Ahora la Barra tendrá la foto
-        sub: p.sub
-    })), 
-    total: totalPedido
-};
+    const datosPedido = {
+        mesa: mesaActual,
+        items: carrito.map(p => ({
+            nombre: p.nombre,
+            precio: p.precio,
+            imagen: p.imagen,
+            sub: p.sub
+        })), 
+        total: totalPedido
+    };
 
     try {
         const respuesta = await fetch('/api/pedidos', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosPedido)
         });
 
         if (respuesta.ok) {
-            alert(`¡Pedido enviado a barra! (mesa ${mesaActual})🍻`);
+            alert(`¡Pedido enviado a barra! (Mesa ${mesaActual}) 🍻`);
             
-            // Limpiamos todo tras el éxito
+            // LIMPIEZA TRAS ÉXITO
             carrito = [];
-            const iconos = document.querySelectorAll('.icon-cart');
-            iconos.forEach(icono => {
-                icono.innerHTML = `🛒 <span>0</span>`;
-            });
+            actualizarInterfazCarrito(); // El badge volverá a 0 y se ocultará
             cerrarCarrito();
         } else {
             alert("Hubo un problema al enviar el pedido. Inténtalo de nuevo.");
@@ -234,3 +200,8 @@ function filtrarEnDetalle() {
         item.style.display = nombre.includes(texto) ? 'flex' : 'none';
     });
 }
+
+window.onload = () => {
+    obtenerProductos();
+    actualizarInterfazCarrito(); // Inicializa el badge en 0 (oculto)
+};
