@@ -43,6 +43,30 @@ app.get('/api/productos', async (req, res) => {
     }
 });
 
+
+// 1. Esquema para los Pedidos (Orders)
+const pedidoSchema = new mongoose.Schema({
+    items: Array,        // Aquí guardaremos la lista de productos del carrito
+    total: Number,       // El precio total del pedido
+    fecha: { type: Date, default: Date.now }, // Para saber cuándo se hizo el pedido
+    estado: { type: String, default: 'Pendiente' } // Para que el camarero sepa si está listo
+});
+
+const Pedido = mongoose.model('Pedido', pedidoSchema, 'pedidos');
+
+
+// 2. RUTA POST: Para recibir el pedido del cliente y guardarlo en la DB
+app.post('/api/pedidos', async (req, res) => {
+    try {
+        const nuevoPedido = new Pedido(req.body); // Recibe { items, total }
+        await nuevoPedido.save();
+        res.status(201).json({ mensaje: "✅ Pedido guardado con éxito", id: nuevoPedido._id });
+    } catch (error) {
+        console.error("Error al guardar pedido:", error);
+        res.status(500).send("Error al procesar el pedido");
+    }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Salero Bar funcionando en http://localhost:${PORT}`);
