@@ -15,9 +15,10 @@
             <div class="logo">S</div>
             <nav>
                 <ul>
-                    <li><a href="index.html" style="color: inherit; text-decoration: none;"><i class="fas fa-utensils"></i> COCINA</a></li>
-                    <li class="active"><i class="fas fa-glass-martini-alt"></i> BARRA</li>
-                    <li><i class="fas fa-history"></i> HISTORY</li>
+                    <li onclick="mostrarHome()" id="btn-home"><i
+                                class="fas fa-utensils"></i> HOME</li>
+                    <li class="active" onclick="mostrarPedidosActivos()" id="btn-barra"><i class="fas fa-glass-martini-alt"></i> BARRA</li>
+                    <li onclick="mostrarHistorial()" id="btn-history"><i class="fas fa-history"></i> HISTORY</li>
                 </ul>
             </nav>
             <div class="status-container">
@@ -43,7 +44,24 @@
             </header>
 
             <section class="cards-container">
-                </section>
+            </section>
+            <div id="history-view" style="display: none;">
+                <div class="history-header">
+                    <h2>ORDER HISTORY</h2>
+                </div>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Mesa</th>
+                            <th>ID</th>
+                            <th>Productos</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
         </main>
     </div>
 

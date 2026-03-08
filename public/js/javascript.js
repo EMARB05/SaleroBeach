@@ -181,5 +181,62 @@ async function cobrarMesa(idDisplay) {
         } catch (error) {
             alert("Error al conectar con el servidor");
         }
+
     }
+
+}
+
+async function mostrarHistorial() {
+    actualizarMenuActivo('btn-history'); // Ahora brillará HISTORY
+    document.querySelector('.cards-container').style.display = 'none';
+    document.getElementById('history-view').style.display = 'block';
+    // 1. Ocultamos las tarjetas y mostramos la vista de tabla
+    document.querySelector('.cards-container').style.display = 'none';
+    const viewHistory = document.getElementById('history-view');
+    viewHistory.style.display = 'block';
+
+    try {
+        // 2. Traemos solo los pedidos 'Pagado' de la DB
+        const respuesta = await fetch('http://localhost:3000/api/pedidos/historial');
+        const historial = await respuesta.json();
+        const tbody = document.getElementById('history-body');
+        
+        tbody.innerHTML = historial.map(pedido => {
+            // Agrupamos nombres para que la columna "Menu" no sea un caos
+            const nombresItems = pedido.items.map(i => i.nombre).join(', ');
+            const fechaFormateada = new Date(pedido.fecha).toLocaleString();
+
+            return `
+                <tr>
+                    <td>Mesa ${pedido.mesa || 'N/A'}</td>
+                    <td>#${pedido._id.slice(-5)}</td>
+                    <td>
+                        <div class="menu-info">
+                            <strong>${nombresItems}</strong><br>
+                            <span>${pedido.total.toFixed(2)}€</span>
+                        </div>
+                    </td>
+                    <td>${fechaFormateada}</td>
+                    <td><span class="status-badge completed">COMPLETED</span></td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error("Error al cargar historial:", error);
+    }
+}
+function actualizarMenuActivo(idBoton) {
+    // Quitamos la clase active de todos los LI del menú
+    document.querySelectorAll('.sidebar li').forEach(li => {
+        li.classList.remove('active');
+    });
+    // Se la ponemos solo al que pulsamos
+    document.getElementById(idBoton).classList.add('active');
+}
+
+function mostrarHome() {
+    actualizarMenuActivo('btn-home');
+    document.getElementById('history-view').style.display = 'none';
+    document.querySelector('.cards-container').style.display = 'flex';
+    obtenerPedidosDeDB();
 }

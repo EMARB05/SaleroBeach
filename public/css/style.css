@@ -390,3 +390,32 @@ header {
     margin-top: 10px;
 }
 
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #1a1c23; /* Color oscuro como tu UI */
+    color: white;
+}
+
+.history-table th, .history-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+
+.history-table th {
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.status-badge.completed {
+    background-color: #ff5722; /* El naranja que sale en tu imagen */
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
