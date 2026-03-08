@@ -1,6 +1,6 @@
 (function comprobarSesion() {
     const usuario = localStorage.getItem('usuarioNombre');
-    
+
     if (!usuario) {
         // Si no hay nadie logueado, lo mandamos al diseño naranja
         window.location.href = 'login.html';
@@ -13,7 +13,7 @@ let todasLasComandas = [];
 window.onload = () => {
     obtenerPedidosDeDB();
     // Actualizar automáticamente cada 15 segundos para ver pedidos nuevos
-    setInterval(obtenerPedidosDeDB, 15000); 
+    setInterval(obtenerPedidosDeDB, 15000);
 };
 // 3. Función principal de dibujo (Maneja Cocina y Barra)
 function renderizarPedidos(filtroId = null) {
@@ -59,20 +59,22 @@ function renderizarPedidos(filtroId = null) {
                 </div>
                 <div class="product-list">
                     ${articulosAgrupados.map(art => `
-                        <div class="product-item">
-                            <img src="${art.imagen}" alt="${art.nombre}">
-                            <div class="details">
-                                <h3>${art.nombre} 
-                                    <span class="badge ${(art.sub || '').toLowerCase() === 'food' ? 'badge-cocina' : 'badge-barra'}">
-                                        ${(art.sub || '').toLowerCase() === 'food' ? 'COCINA' : 'BARRA'}
-                                    </span>
-                                </h3>
-                                ${art.nota ? `<p class="note">${art.nota}</p>` : ''}
-                                ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
-                            </div>
-                            <span class="qty">Qty: ${art.cantidad}</span>
-                        </div>
-                    `).join('')}
+    <div class="product-item">
+        <img src="${art.imagen}" alt="${art.nombre}">
+        <div class="details">
+            <h3>${art.nombre} 
+                <span class="badge ${(art.sub || '').toLowerCase() === 'food' ? 'badge-cocina' : 'badge-barra'}">
+                    ${(art.sub || '').toLowerCase() === 'food' ? 'COCINA' : 'BARRA'}
+                </span>
+            </h3>
+            
+            ${art.nota ? `<p class="note">⚠️ ${art.nota}</p>` : ''}
+            
+            ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
+        </div>
+        <span class="qty">Qty: ${art.cantidad}</span>
+    </div>
+`).join('')}
                 </div>
                 <div class="total-items">
                     <hr class="separator">
@@ -85,9 +87,9 @@ function renderizarPedidos(filtroId = null) {
                     </div>
                     <div class="card-buttons">
                         ${esBarra
-                            ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
-                            : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
-                        }
+                ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
+                : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
+            }
                         <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
                     </div>
                 </div>
@@ -114,7 +116,7 @@ async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
     try {
         // 1. Buscamos el objeto completo en nuestro array local para sacar el mongoId
         const pedido = todasLasComandas.find(p => p.id === idCorto);
-        
+
         if (!pedido) {
             console.error("No se encontró el pedido localmente");
             return;
@@ -122,13 +124,13 @@ async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
 
         // 2. Hacemos el fetch usando el mongoId real
         const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/cancelar`, {
-            method: 'PATCH' 
+            method: 'PATCH'
         });
 
         if (respuesta.ok) {
             // 3. ¡IMPORTANTE! Limpiamos el filtro de pestañas para que no intente 
             // renderizar un pedido que ya no va a existir en 'pendientes'
-            obtenerPedidosDeDB(); 
+            obtenerPedidosDeDB();
             console.log("Pedido cancelado con éxito");
         }
     } catch (error) {
@@ -175,11 +177,11 @@ async function obtenerPedidosDeDB() {
     try {
         const respuesta = await fetch('/api/pedidos/pendientes');
         const pedidosDB = await respuesta.json();
-        
+
         todasLasComandas = pedidosDB.map(p => ({
             id: p._id.slice(-3),
             mongoId: p._id, // IMPORTANTE: Necesitamos el ID real de Mongo para el PATCH
-            mesa: p.mesa || "Barra", 
+            mesa: p.mesa || "Barra",
             articulos: p.items,
             total: p.total
         }));
@@ -225,7 +227,7 @@ async function mostrarHistorial() {
         const respuesta = await fetch('/api/pedidos/historial');
         const historial = await respuesta.json();
         const tbody = document.getElementById('history-body');
-        
+
         tbody.innerHTML = historial.map(pedido => {
             const agrupados = pedido.items.reduce((acc, item) => {
                 const existe = acc.find(a => a.nombre === item.nombre);
@@ -282,7 +284,7 @@ function mostrarHome() {
     // 1. VOLVEMOS A MOSTRAR LO DEL HOME/BARRA
     const tituloPrincipal = document.getElementById('main-title');
     if (tituloPrincipal) tituloPrincipal.style.display = 'block'; // Mostramos "POS - CONTROL DE CAJA"
-    
+
     const tabs = document.querySelector('.order-tabs');
     if (tabs) tabs.style.display = 'flex'; // Mostramos los botones #c35
 

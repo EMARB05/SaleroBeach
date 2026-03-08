@@ -483,6 +483,35 @@ body {
     border-color: #ff7300; /* Naranja Salero para resaltar cuando escriben */
 }
 
+/* El contenedor principal del modal */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh; /* Para que no se salga de la pantalla del móvil */
+    overflow: hidden; /* Evita que el modal entero haga scroll */
+}
+
+/* La lista donde se inyectan los productos */
+#lista-pedido {
+    overflow-y: auto; /* Habilita el scroll SOLO aquí dentro */
+    padding-bottom: 20px;
+    flex-grow: 1; /* Hace que la lista use todo el espacio central */
+}
+
+/* El contenedor del botón y el total */
+#precio-total, .btn-enviar-pedido {
+    flex-shrink: 0; /* Impide que el botón se haga pequeño o desaparezca */
+    margin-top: 10px;
+}
+
+/* Para que el input de nota no se pegue a los bordes en móviles */
+@media (max-width: 480px) {
+    .order-card {
+        width: 90%; /* Se adapta mejor al ancho del iPhone */
+        margin: 0 auto;
+    }
+}
+
 /* Media Query para Tablets y pantallas medianas */
 @media (min-width: 600px) {
     .mobile-container {
@@ -500,7 +529,7 @@ body {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 20px;
-        overflow-x: hidden; /* Ya no hace falta scroll horizontal si hay espacio */
+        overflow-x: hidden; 
     }
 
     .modal {

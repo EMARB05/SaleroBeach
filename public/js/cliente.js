@@ -147,6 +147,16 @@ lista.innerHTML += `
     totalElem.innerText = `Total: ${total.toFixed(2)}€`;
 }
 
+function guardarNota(id, texto) {
+    // Buscamos todos los productos en el carrito con ese ID y les asignamos la nota
+    carrito.forEach(item => {
+        if (item.id === id) {
+            item.nota = texto;
+        }
+    });
+    console.log("Nota actualizada para " + id + ": " + texto);
+}
+
 // Nueva función para gestionar los botones
 function cambiarCantidad(id, cambio) {
     if (cambio === 1) {
