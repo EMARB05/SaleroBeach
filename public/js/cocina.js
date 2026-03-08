@@ -77,29 +77,24 @@ function mostrarSeccion(nombreSeccion) {
     const historial = document.getElementById('seccion-historial');
     const botones = document.querySelectorAll('.sidebar nav ul li');
 
-    // 1. Cambiar visibilidad de las secciones
     if (nombreSeccion === 'pedidos') {
         pedidos.style.display = 'flex';
         historial.style.display = 'none';
+        obtenerPedidosCocina(); // Refrescamos pedidos al volver
     } else {
         pedidos.style.display = 'none';
         historial.style.display = 'block';
+        cargarHistorialCocina(); // <--- ¡ESTA ES LA CLAVE!
     }
 
-    // 2. Arreglar el "brillo" (Clase Active)
+    // Lógica del brillo de los botones (el resto igual...)
     botones.forEach(boton => {
         boton.classList.remove('active');
-        
-        // Buscamos el texto dentro del botón para saber cuál activar
         const texto = boton.innerText.toUpperCase();
-        if (nombreSeccion === 'pedidos' && texto.includes('COCINA')) {
-            boton.classList.add('active');
-        } else if (nombreSeccion === 'historial' && texto.includes('HISTORY')) {
-            boton.classList.add('active');
-        }
+        if (nombreSeccion === 'pedidos' && texto.includes('COCINA')) boton.classList.add('active');
+        else if (nombreSeccion === 'historial' && texto.includes('HISTORY')) boton.classList.add('active');
     });
 }
-
 async function completarPedido(idCorto) {
     // 1. Buscamos el pedido en nuestro array local para sacar el mongoId
     const pedido = todasLasComandas.find(p => p.id === idCorto);
@@ -198,6 +193,46 @@ function filtrarPorPedido(id) {
     } else {
         // Si no, filtramos por ese ID
         renderizarPedidosCocina(id);
+    }
+}
+
+async function cargarHistorialCocina() {
+    try {
+        const respuesta = await fetch('/api/pedidos/historial');
+        const historial = await respuesta.json();
+        const tbody = document.getElementById('history-body-cocina'); // <--- Mira que el ID sea correcto en tu HTML
+        
+        if (!tbody) return;
+
+        tbody.innerHTML = historial.map(pedido => {
+            // Agrupamos para que no salgan 20 líneas si pidió 20 croquetas
+            const agrupados = pedido.items.reduce((acc, item) => {
+                const existe = acc.find(a => a.nombre === item.nombre);
+                if (existe) existe.cantidad += 1;
+                else acc.push({ ...item, cantidad: 1 });
+                return acc;
+            }, []);
+
+            const textoMenu = agrupados.map(prod => `${prod.nombre} (x${prod.cantidad})`).join(', ');
+            const fecha = new Date(pedido.fecha).toLocaleString();
+            const esCancelado = pedido.estado === 'Cancelado';
+
+            return `
+                <tr>
+                    <td>Mesa ${pedido.mesa || 'N/A'}</td>
+                    <td>#${pedido._id.slice(-5)}</td>
+                    <td>${textoMenu}</td>
+                    <td>${fecha}</td>
+                    <td>
+                        <span class="status-badge ${esCancelado ? 'canceled' : 'completed'}">
+                            ${pedido.estado.toUpperCase()}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error("Error al cargar historial en cocina:", error);
     }
 }
 
