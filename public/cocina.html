@@ -9,96 +9,98 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body>
+<body class="kitchen-view">
     <div class="container">
         <aside class="sidebar">
             <div class="logo">S</div>
             <nav>
                 <ul>
-                    <li class="active"><i class="fas fa-home"></i>HOME</li>
-                    <li>ORDER HISTORY</li>
-                    <li>PRODUCTS</li>
+                    <li class="active" onclick="mostrarSeccion('pedidos')">
+                        <i class="fas fa-utensils"></i> COCINA
+                    </li>
+                    <li onclick="mostrarSeccion('historial')">
+                        <i class="fas fa-history"></i> HISTORY
+                    </li>
+                    <li><i class="fas fa-box"></i> PRODUCTOS</li>
                 </ul>
             </nav>
             <div class="status-container">
                 <span class="status-dot"></span>
-                <p>Restaurant Open</p>
+                <p>Cocina Online</p>
             </div>
         </aside>
 
         <main class="order-list">
             <header>
                 <div class="header-top">
-                    <h1>ORDER LIST</h1>
+                    <h1 id="main-title">LISTA DE PEDIDOS</h1>
                     <div class="user-profile">
                         <div class="user-info">
-                            <span class="user-avatar">A</span> <span class="user-name">Admin1_resto</span>
+                            <span class="user-avatar">C</span> 
+                            <span class="user-name">Chef_Salero</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <i class="fas fa-bell notification-icon"></i>
                     </div>
                 </div>
 
-                <div class="order-tabs">
-                    <span class="tab active">#215</span>
-                    <span class="tab">#216</span>
-                    <span class="tab">#217</span>
+                <div class="order-tabs" id="tabs-cocina">
+                    <span class="tab active">PENDIENTES</span>
+                    <span class="tab">EN PREPARACIÓN</span>
                 </div>
             </header>
 
-            <section class="cards-container">
-                <article class="order-card" data-order-id="215">
+            <section id="seccion-pedidos" class="cards-container">
+                <article class="order-card">
                     <div class="card-header">
-                        <h2>Order #215</h2>
-
-                        <div class="alert-icon">!</div>
+                        <h2>Mesa 3</h2>
+                        <div class="alert-icon">5m</div>
                     </div>
 
                     <div class="product-list">
                         <div class="product-item">
-                            <img src="img/tortilla.png" alt="Tortilla">
                             <div class="details">
-                                <h3>Tortilla</h3>
-                                <p class="note">CELIACO - Sin cebolla</p>
-                                <p>Hace 10 min</p>
+                                <h3>Chipi a la Plancha</h3>
+                                <p class="note">SIN SAL</p>
                             </div>
-                            <span class="qty">Qty: 1</span>
-                        </div>
-                        <div class="product-item">
-                            <img src="img/pimientosPadron.png" alt="Pimientos">
-                            <div class="details">
-                                <h3>Pimientos Padrón</h3>
-                                <p>Hace 8 min</p>
-                            </div>
-                            <span class="qty">Qty: 1</span>
-                        </div>
-                        <div class="product-item">
-                            <img src="img/loin.jpg" alt="Loin">
-                            <div class="details">
-                                <h3>Loin of Vension</h3>
-                                <p>Hace 8 min</p>
-                            </div>
-                            <span class="qty">Qty: 1</span>
+                            <span class="qty">x2</span>
                         </div>
                     </div>
+                    
                     <div class="total-items">
                         <hr class="separator">
                         <div class="info-footer">
-                            <p class="qty-total">x3 Items</p>
-                            <h3 class="table-id">Mesa 3</h3>
+                            <p class="qty-total">Comida pendiente</p>
+                            <p>15:30</p>
                         </div>
                         <div class="card-buttons">
-                            <button class="btn-check" onclick="completarPedido('215')">✔</button>
-                            <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
+                            <button class="btn-check" onclick="completarPedido('id_ejemplo')">LISTO</button>
+                            <button class="btn-cancel" onclick="cancelarPedido('id_ejemplo')">✖</button>
                         </div>
                     </div>
-
-
                 </article>
             </section>
+
+            <section id="seccion-historial" style="display: none;">
+                <h2 style="margin-bottom: 20px;">Últimos Pedidos Finalizados</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Mesa</th>
+                            <th>Pedido</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial-body">
+                        </tbody>
+                </table>
+            </section>
+
         </main>
     </div>
-    <script src="./js/javascript.js"></script>
+
+    <script src="js/cocina.js"></script>
 </body>
 
 </html>

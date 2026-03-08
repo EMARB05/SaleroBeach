@@ -1,6 +1,6 @@
 (function comprobarSesion() {
     const usuario = localStorage.getItem('usuarioNombre');
-
+    
     if (!usuario) {
         // Si no hay nadie logueado, lo mandamos al diseño naranja
         window.location.href = 'login.html';
@@ -13,7 +13,7 @@ let todasLasComandas = [];
 window.onload = () => {
     obtenerPedidosDeDB();
     // Actualizar automáticamente cada 15 segundos para ver pedidos nuevos
-    setInterval(obtenerPedidosDeDB, 15000);
+    setInterval(obtenerPedidosDeDB, 15000); 
 };
 // 3. Función principal de dibujo (Maneja Cocina y Barra)
 function renderizarPedidos(filtroId = null) {
@@ -87,9 +87,9 @@ function renderizarPedidos(filtroId = null) {
                     </div>
                     <div class="card-buttons">
                         ${esBarra
-                ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
-                : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
-            }
+                            ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
+                            : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
+                        }
                         <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
                     </div>
                 </div>
@@ -104,10 +104,34 @@ function renderizarPedidos(filtroId = null) {
 // 4. Lógica de estados y botones
 function completarPedido(id) {
     const tarjeta = document.querySelector(`[data-order-id="${id}"]`);
-    const contenedorBotones = tarjeta.querySelector('.card-buttons');
-    contenedorBotones.innerHTML = `<button class="btn-completed">✔ COMPLETED</button>`;
-    tarjeta.classList.add('order-finished');
-    localStorage.setItem(`order-${id}`, 'completed');
+    
+    if (tarjeta) {
+        // 1. Feedback visual (Botón naranja de COMPLETADO)
+        const btnCont = tarjeta.querySelector('.card-buttons');
+        if (btnCont) {
+            btnCont.innerHTML = `<button class="btn-completed">✔ COMPLETADO</button>`;
+        }
+        tarjeta.classList.add('order-finished');
+        
+        // 2. Persistencia temporal (opcional)
+        localStorage.setItem(`order-${id}`, 'completed');
+
+        // 3. Limpieza de pantalla
+        setTimeout(() => {
+            tarjeta.style.transition = "0.3s"; // Asegúrate de que tenga transición
+            tarjeta.style.opacity = "0";
+            
+            setTimeout(() => {
+                tarjeta.remove();
+                
+                // 4. Actualizamos el array local para que el filtro por pestañas (#c35)
+                // no intente volver a dibujar un pedido que ya quitamos
+                todasLasComandas = todasLasComandas.filter(p => p.id !== id);
+                
+                console.log(`Pedido #${id} eliminado de la vista.`);
+            }, 300);
+        }, 1500);
+    }
 }
 
 async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
@@ -116,7 +140,7 @@ async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
     try {
         // 1. Buscamos el objeto completo en nuestro array local para sacar el mongoId
         const pedido = todasLasComandas.find(p => p.id === idCorto);
-
+        
         if (!pedido) {
             console.error("No se encontró el pedido localmente");
             return;
@@ -124,13 +148,13 @@ async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
 
         // 2. Hacemos el fetch usando el mongoId real
         const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/cancelar`, {
-            method: 'PATCH'
+            method: 'PATCH' 
         });
 
         if (respuesta.ok) {
             // 3. ¡IMPORTANTE! Limpiamos el filtro de pestañas para que no intente 
             // renderizar un pedido que ya no va a existir en 'pendientes'
-            obtenerPedidosDeDB();
+            obtenerPedidosDeDB(); 
             console.log("Pedido cancelado con éxito");
         }
     } catch (error) {
@@ -177,11 +201,11 @@ async function obtenerPedidosDeDB() {
     try {
         const respuesta = await fetch('/api/pedidos/pendientes');
         const pedidosDB = await respuesta.json();
-
+        
         todasLasComandas = pedidosDB.map(p => ({
             id: p._id.slice(-3),
             mongoId: p._id, // IMPORTANTE: Necesitamos el ID real de Mongo para el PATCH
-            mesa: p.mesa || "Barra",
+            mesa: p.mesa || "Barra", 
             articulos: p.items,
             total: p.total
         }));
@@ -203,15 +227,20 @@ async function cobrarMesa(idDisplay) {
             });
 
             if (respuesta.ok) {
+                // AQUÍ: Eliminamos la tarjeta del DOM inmediatamente
+                const tarjeta = document.querySelector(`[data-order-id="${idDisplay}"]`);
+                if (tarjeta) tarjeta.remove();
+                
+                // Quitamos del array para que el refresco automático no la vuelva a pintar
+                todasLasComandas = todasLasComandas.filter(p => p.id !== idDisplay);
+
                 alert("¡Pedido pagado y enviado al historial!");
-                obtenerPedidosDeDB(); // Refrescamos la lista automáticamente
+                obtenerPedidosDeDB(); 
             }
         } catch (error) {
             alert("Error al conectar con el servidor");
         }
-
     }
-
 }
 
 async function mostrarHistorial() {
@@ -227,7 +256,7 @@ async function mostrarHistorial() {
         const respuesta = await fetch('/api/pedidos/historial');
         const historial = await respuesta.json();
         const tbody = document.getElementById('history-body');
-
+        
         tbody.innerHTML = historial.map(pedido => {
             const agrupados = pedido.items.reduce((acc, item) => {
                 const existe = acc.find(a => a.nombre === item.nombre);
@@ -284,7 +313,7 @@ function mostrarHome() {
     // 1. VOLVEMOS A MOSTRAR LO DEL HOME/BARRA
     const tituloPrincipal = document.getElementById('main-title');
     if (tituloPrincipal) tituloPrincipal.style.display = 'block'; // Mostramos "POS - CONTROL DE CAJA"
-
+    
     const tabs = document.querySelector('.order-tabs');
     if (tabs) tabs.style.display = 'flex'; // Mostramos los botones #c35
 
