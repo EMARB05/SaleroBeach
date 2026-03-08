@@ -431,3 +431,21 @@ header {
     padding: 5px 8px;
     border-radius: 15px;
 }
+
+/* Clase para la tarjeta cuando está lista */
+.order-card.order-ready {
+    border: 2px solid #32DDFB; /* El cian que usamos en tu proyecto */
+    background-color: rgba(50, 221, 251, 0.05); /* Fondo muy sutil */
+    box-shadow: 0 0 15px rgba(50, 221, 251, 0.2);
+}
+
+/* Badge pequeño al lado del ID */
+.ready-badge {
+    background: #32DDFB;
+    color: #1a1a1a;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+}

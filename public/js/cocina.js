@@ -20,7 +20,7 @@ function renderizarPedidosCocina(filtroId = null) {
     if (contenedorTabs) {
         contenedorTabs.innerHTML = todasLasComandas.map(p => `
             <span class="tab ${filtroId === p.id ? 'active' : ''}" 
-                  onclick="renderizarPedidosCocina('${p.id}')">#${p.id}</span>
+                  onclick="filtrarPorPedido('${p.id}')">#${p.id}</span>
         `).join('');
     }
 
@@ -101,63 +101,103 @@ function mostrarSeccion(nombreSeccion) {
 }
 
 async function completarPedido(idCorto) {
+    // 1. Buscamos el pedido en nuestro array local para sacar el mongoId
     const pedido = todasLasComandas.find(p => p.id === idCorto);
-    if (!pedido) return;
+    
+    if (!pedido) {
+        console.error("No se encontró el pedido para completar");
+        return;
+    }
 
     try {
-        // En lugar de solo borrar la tarjeta, avisamos a la API
+        // 2. Avisamos al servidor para que cambie el estado a 'Listo'
         const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/completar`, {
-            method: 'PATCH' // O el método que use tu controlador
+            method: 'PATCH'
         });
 
         if (respuesta.ok) {
-            // Si la DB dice OK, entonces sí lo borramos de la pantalla
+            // 3. Si el servidor dice OK, hacemos la animación de salida
             const tarjeta = document.querySelector(`[data-order-id="${idCorto}"]`);
-            tarjeta.style.opacity = "0";
-            setTimeout(() => {
-                todasLasComandas = todasLasComandas.filter(p => p.id !== idCorto);
-                renderizarPedidosCocina();
-            }, 400);
+            if (tarjeta) {
+                tarjeta.classList.add('order-finished');
+                // Ponemos el botón en naranja de "COMPLETADO"
+                const btnCont = tarjeta.querySelector('.card-buttons');
+                if (btnCont) {
+                    btnCont.innerHTML = `<button class="btn-completed">✔ COMPLETADO</button>`;
+                }
+
+                // Esperamos un poco y lo quitamos de la vista
+                setTimeout(() => {
+                    tarjeta.style.opacity = "0";
+                    setTimeout(() => {
+                        tarjeta.remove();
+                        // Filtramos el array local para que desaparezca del todo
+                        todasLasComandas = todasLasComandas.filter(p => p.id !== idCorto);
+                    }, 300);
+                }, 1000);
+            }
         }
     } catch (error) {
-        alert("Error al actualizar en la base de datos");
+        console.error("Error al completar el pedido:", error);
+        alert("No se pudo conectar con el servidor para marcar como listo");
     }
 }
+async function obtenerPedidosCocina() {
+    try {
+        // 1. Traemos TODOS los pedidos activos (Pendientes y Listos)
+        const respuesta = await fetch('/api/pedidos/pendientes'); 
+        const datos = await respuesta.json();
+        
+        // 2. FILTRO CLAVE: El cocinero solo quiere ver lo que falta por hacer
+        const soloParaCocina = datos.filter(p => p.estado === 'Pendiente');
+
+        // 3. Mapeamos solo esos pedidos pendientes
+        todasLasComandas = soloParaCocina.map(p => ({
+            id: p._id.slice(-3),
+            mongoId: p._id,
+            mesa: p.mesa || "Barra",
+            articulos: p.items,
+            fecha: p.fecha,
+            estado: p.estado // Guardamos el estado por si acaso
+        }));
+        
+        // 4. Dibujamos las tarjetas en la pantalla
+        renderizarPedidosCocina();
+
+    } catch (error) {
+        console.error("Error conectando con la DB:", error);
+    }
+}
+
 async function cancelarPedido(idCorto) {
-    if (!confirm("¿Seguro que quieres cancelar este pedido?")) return;
-    
+    if (!confirm("¿Seguro que quieres cancelar este pedido de comida?")) return;
+
     const pedido = todasLasComandas.find(p => p.id === idCorto);
-    
+    if (!pedido) return;
+
     try {
         const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/cancelar`, {
             method: 'PATCH'
         });
 
         if (respuesta.ok) {
-            obtenerPedidosCocina(); // Refrescamos todo desde la DB
+            // Refrescamos inmediatamente para que desaparezca
+            obtenerPedidosCocina();
         }
     } catch (error) {
         console.error("Error al cancelar:", error);
     }
 }
 
-async function obtenerPedidosCocina() {
-    try {
-        // Traemos solo lo que está pendiente de cocinar
-        const respuesta = await fetch('/api/pedidos/pendientes'); 
-        const datos = await respuesta.json();
-        
-        todasLasComandas = datos.map(p => ({
-            id: p._id.slice(-3),
-            mongoId: p._id,
-            mesa: p.mesa || "Barra",
-            articulos: p.items,
-            fecha: p.fecha
-        }));
-        
+function filtrarPorPedido(id) {
+    // Buscamos si hay alguna pestaña activa con ese ID
+    const pestañaActiva = document.querySelector(`.tab.active`);
+    if (pestañaActiva && pestañaActiva.innerText.includes(id)) {
+        // Si ya estaba activo, mostramos todos
         renderizarPedidosCocina();
-    } catch (error) {
-        console.error("Error conectando con la DB:", error);
+    } else {
+        // Si no, filtramos por ese ID
+        renderizarPedidosCocina(id);
     }
 }
 

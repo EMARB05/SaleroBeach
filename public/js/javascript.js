@@ -34,13 +34,14 @@ function renderizarPedidos(filtroId = null) {
     contenedor.innerHTML = '';
 
     pedidosAMostrar.forEach(pedido => {
+        // --- NUEVO: Detectar si el pedido está listo para servir ---
+        const esListo = pedido.estado === 'Listo';
+
         // --- A. CÁLCULO DEL TOTAL ---
         const totalComanda = pedido.articulos.reduce((acc, art) => acc + (art.precio || 0), 0);
 
         // --- B. AGRUPACIÓN DE PRODUCTOS REPETIDOS ---
-        // Esto evita que salgan 5 filas de pulpo si piden 5 pulpos
         const articulosAgrupados = pedido.articulos.reduce((acc, art) => {
-            // Buscamos si ya existe el producto con el mismo nombre y nota
             const existe = acc.find(item => item.nombre === art.nombre && item.nota === art.nota);
             if (existe) {
                 existe.cantidad += 1;
@@ -51,30 +52,31 @@ function renderizarPedidos(filtroId = null) {
         }, []);
 
         // --- C. GENERACIÓN DEL HTML DE LA TARJETA ---
+        // Añadimos la clase 'order-ready' si el estado es 'Listo'
         const cardHTML = `
-            <article class="order-card" data-order-id="${pedido.id}">
+            <article class="order-card ${esListo ? 'order-ready' : ''}" data-order-id="${pedido.id}">
                 <div class="card-header">
-                    <h2>Order #${pedido.id}</h2>
+                    <h2>Order #${pedido.id} ${esListo ? '<span class="ready-badge">✅ LISTO</span>' : ''}</h2>
                     <div class="alert-icon">!</div>
                 </div>
                 <div class="product-list">
                     ${articulosAgrupados.map(art => `
-    <div class="product-item">
-        <img src="${art.imagen}" alt="${art.nombre}">
-        <div class="details">
-            <h3>${art.nombre} 
-                <span class="badge ${(art.sub || '').toLowerCase() === 'food' ? 'badge-cocina' : 'badge-barra'}">
-                    ${(art.sub || '').toLowerCase() === 'food' ? 'COCINA' : 'BARRA'}
-                </span>
-            </h3>
-            
-            ${art.nota ? `<p class="note">⚠️ ${art.nota}</p>` : ''}
-            
-            ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
-        </div>
-        <span class="qty">Qty: ${art.cantidad}</span>
-    </div>
-`).join('')}
+                        <div class="product-item">
+                            <img src="${art.imagen}" alt="${art.nombre}">
+                            <div class="details">
+                                <h3>${art.nombre} 
+                                    <span class="badge ${(art.sub || '').toLowerCase() === 'food' ? 'badge-cocina' : 'badge-barra'}">
+                                        ${(art.sub || '').toLowerCase() === 'food' ? 'COCINA' : 'BARRA'}
+                                    </span>
+                                </h3>
+                                
+                                ${art.nota ? `<p class="note">⚠️ ${art.nota}</p>` : ''}
+                                
+                                ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
+                            </div>
+                            <span class="qty">Qty: ${art.cantidad}</span>
+                        </div>
+                    `).join('')}
                 </div>
                 <div class="total-items">
                     <hr class="separator">
@@ -207,7 +209,8 @@ async function obtenerPedidosDeDB() {
             mongoId: p._id, // IMPORTANTE: Necesitamos el ID real de Mongo para el PATCH
             mesa: p.mesa || "Barra", 
             articulos: p.items,
-            total: p.total
+            total: p.total,
+            estado: p.estado
         }));
         renderizarPedidos();
     } catch (error) {

@@ -99,25 +99,27 @@ app.post('/api/pedidos', async (req, res) => {
 
 app.get('/api/pedidos/pendientes', async (req, res) => {
     try {
-        // ✅ SOLO queremos los que están estrictamente en 'Pendiente'
-        // Esto ignorará automáticamente los 'Pagados' y los 'Cancelados'
+        // Incluimos 'Cancelado' para que la barra lo vea antes de borrarlo
         const pedidos = await Pedido.find({ 
-            estado: 'Pendiente' 
+            estado: { $in: ['Pendiente', 'Listo', 'Cancelado'] } 
         }).sort({ fecha: -1 }); 
         
         res.json(pedidos);
     } catch (error) {
-        res.status(500).send("Error al obtener pedidos pendientes");
+        res.status(500).send("Error al obtener pedidos");
     }
 });
 
 // 3. Ruta para el HISTORY 
 app.get('/api/pedidos/historial', async (req, res) => {
-    // Buscamos tanto Pagados como Cancelados
-    const historial = await Pedido.find({ 
-        estado: { $in: ['Pagado', 'Cancelado'] } 
-    }).sort({ fecha: -1 });
-    res.json(historial);
+    try {
+        const historial = await Pedido.find({ 
+            estado: { $in: ['Pagado', 'Cancelado'] } 
+        }).sort({ fecha: -1 });
+        res.json(historial);
+    } catch (error) {
+        res.status(500).send("Error al obtener el historial");
+    }
 });
 // 4. Ruta para CAMBIAR A PAGADO (PATCH)
 app.patch('/api/pedidos/:id/pagar', async (req, res) => {
@@ -155,6 +157,16 @@ app.patch('/api/pedidos/:id/cancelar', async (req, res) => {
         res.send("Pedido cancelado con éxito");
     } catch (error) {
         res.status(500).send("Error al cancelar el pedido");
+    }
+});
+
+app.patch('/api/pedidos/:id/completar', async (req, res) => {
+    try {
+        // Cambiamos a 'Listo'. La barra seguirá viéndolo.
+        await Pedido.findByIdAndUpdate(req.params.id, { estado: 'Listo' });
+        res.send("Pedido marcado como listo");
+    } catch (error) {
+        res.status(500).send("Error al completar");
     }
 });
 
