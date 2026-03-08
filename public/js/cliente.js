@@ -201,6 +201,14 @@ function filtrarEnDetalle() {
     });
 }
 
+// Función para cerrar el modal del carrito
+function cerrarCarrito() {
+    const modal = document.getElementById('modal-carrito');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 window.onload = () => {
     obtenerProductos();
     actualizarInterfazCarrito(); // Inicializa el badge en 0 (oculto)

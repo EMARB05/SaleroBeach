@@ -121,7 +121,7 @@ async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
         }
 
         // 2. Hacemos el fetch usando el mongoId real
-        const respuesta = await fetch(`http://localhost:3000/api/pedidos/${pedido.mongoId}/cancelar`, {
+        const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/cancelar`, {
             method: 'PATCH' 
         });
 
@@ -173,7 +173,7 @@ function inicializarMenu() {
 // Cambiamos la URL para traer solo PENDIENTES
 async function obtenerPedidosDeDB() {
     try {
-        const respuesta = await fetch('http://localhost:3000/api/pedidos/pendientes');
+        const respuesta = await fetch('/api/pedidos/pendientes');
         const pedidosDB = await respuesta.json();
         
         todasLasComandas = pedidosDB.map(p => ({
@@ -196,7 +196,7 @@ async function cobrarMesa(idDisplay) {
 
     if (confirm(`¿Cobrar ${pedido.total.toFixed(2)}€ de la Mesa ${pedido.mesa}?`)) {
         try {
-            const respuesta = await fetch(`http://localhost:3000/api/pedidos/${pedido.mongoId}/pagar`, {
+            const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/pagar`, {
                 method: 'PATCH'
             });
 
@@ -222,7 +222,7 @@ async function mostrarHistorial() {
     viewHistory.style.display = 'block';
 
     try {
-        const respuesta = await fetch('http://localhost:3000/api/pedidos/historial');
+        const respuesta = await fetch('/api/pedidos/historial');
         const historial = await respuesta.json();
         const tbody = document.getElementById('history-body');
         
