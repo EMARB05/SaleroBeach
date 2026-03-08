@@ -524,8 +524,8 @@ body {
 
     .icon-cart-container {
         right: auto;
-        left: 49%;
-        transform: translateX(350px); 
+        left: calc(50% + (800px / 2) - 60px);
+        transform: none; 
     }
 
     
