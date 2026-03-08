@@ -50,10 +50,34 @@ body {
 }
 
 .icon-cart-container {
-    position: relative;
-    display: inline-block;
+    position: fixed;    /* Se queda anclado a la pantalla */
+    top: 20px;          /* Distancia desde arriba */
+    right: 20px;        /* Distancia desde la derecha */
+    z-index: 1000;      /* Para que pase por encima de las fotos de comida */
+    background: rgba(255, 255, 255, 0.9); /* Un fondo blanco con transparencia estilo Glassmorphism */
+    padding: 10px;
+    border-radius: 50%; /* Lo hace circular */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Sombra para que flote */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    padding: 5px;
+    transition: transform 0.2s ease;
+}
+
+.icon-cart-container:active {
+    transform: scale(0.9); /* Efecto de pulsación al tocarlo en el móvil */
+}
+
+/* Animación de salto para el badge */
+@keyframes popBadge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+.badge.animar {
+    animation: popBadge 0.3s ease-out;
 }
 
 .badge {
@@ -70,7 +94,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #fff; /* Contorno blanco para que resalte */
+    border: 2px solid #1e1e1e /* Contorno blanco para que resalte */
 }
 
 /* Buscador */
