@@ -108,23 +108,34 @@ function completarPedido(id) {
     localStorage.setItem(`order-${id}`, 'completed');
 }
 
-
-
-async function cancelarPedido(mongoId) {
+async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
     if (!confirm("¿Seguro que quieres cancelar este pedido, fiera?")) return;
 
     try {
-        const respuesta = await fetch(`http://localhost:3000/api/pedidos/${mongoId}/cancelar`, {
-            method: 'PATCH' // ✅ Ahora es un PATCH
+        // 1. Buscamos el objeto completo en nuestro array local para sacar el mongoId
+        const pedido = todasLasComandas.find(p => p.id === idCorto);
+        
+        if (!pedido) {
+            console.error("No se encontró el pedido localmente");
+            return;
+        }
+
+        // 2. Hacemos el fetch usando el mongoId real
+        const respuesta = await fetch(`http://localhost:3000/api/pedidos/${pedido.mongoId}/cancelar`, {
+            method: 'PATCH' 
         });
 
         if (respuesta.ok) {
+            // 3. ¡IMPORTANTE! Limpiamos el filtro de pestañas para que no intente 
+            // renderizar un pedido que ya no va a existir en 'pendientes'
             obtenerPedidosDeDB(); 
+            console.log("Pedido cancelado con éxito");
         }
     } catch (error) {
         console.error("Error al conectar con el servidor:", error);
     }
 }
+
 
 function comprobarPedidosGuardados() {
     const orders = document.querySelectorAll('.order-card');
@@ -204,12 +215,9 @@ async function cobrarMesa(idDisplay) {
 async function mostrarHistorial() {
     actualizarMenuActivo('btn-history');
     document.querySelector('.cards-container').style.display = 'none';
-   // 1. OCULTAMOS LO QUE NO NECESITAMOS
-    document.querySelector('.cards-container').style.display = 'none'; // Tarjetas
-    document.querySelector('.order-tabs').style.display = 'none';      // Los botones #c35
-    document.getElementById('main-title').style.display = 'none';              // El título POS
+    document.querySelector('.order-tabs').style.display = 'none';
+    document.getElementById('main-title').style.display = 'none';
 
-    // 2. MOSTRAMOS EL HISTORIAL
     const viewHistory = document.getElementById('history-view');
     viewHistory.style.display = 'block';
 
@@ -219,7 +227,6 @@ async function mostrarHistorial() {
         const tbody = document.getElementById('history-body');
         
         tbody.innerHTML = historial.map(pedido => {
-            // --- 1. AGRUPAR ITEMS PARA LA TABLA ---
             const agrupados = pedido.items.reduce((acc, item) => {
                 const existe = acc.find(a => a.nombre === item.nombre);
                 if (existe) {
@@ -230,12 +237,17 @@ async function mostrarHistorial() {
                 return acc;
             }, []);
 
-            // --- 2. CREAR EL TEXTO "Producto (Cantidad)" ---
             const textoMenu = agrupados
                 .map(prod => `${prod.nombre} (${prod.cantidad})`)
                 .join(', ');
 
             const fechaFormateada = new Date(pedido.fecha).toLocaleString();
+
+            // --- 🛠️ CAMBIO AQUÍ: LÓGICA DE ESTADO DINÁMICA ---
+            // Si el estado es 'Cancelado', usamos la clase 'canceled' (rojo), si no, 'completed' (verde)
+            const esCancelado = pedido.estado === 'Cancelado';
+            const claseEstado = esCancelado ? 'canceled' : 'completed';
+            const textoEstado = esCancelado ? 'CANCELADO' : 'COMPLETED';
 
             return `
                 <tr>
@@ -248,7 +260,7 @@ async function mostrarHistorial() {
                         </div>
                     </td>
                     <td>${fechaFormateada}</td>
-                    <td><span class="status-badge completed">COMPLETED</span></td>
+                    <td><span class="status-badge ${claseEstado}">${textoEstado}</span></td>
                 </tr>
             `;
         }).join('');

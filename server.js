@@ -40,11 +40,15 @@ async function crearAdminInicial() {
     }
 }
 // Llama a la función después de conectar a Mongo
-mongoose.connect('mongodb://localhost:27017/SaleroBeach')
+// Usamos una variable de entorno para la seguridad
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/SaleroBeach';
+
+mongoose.connect(mongoURI)
   .then(() => {
-      console.log('✅ Conectado a MongoDB');
-      crearAdminInicial(); // <-- Añade esta línea aquí
-  });
+      console.log('✅ Conexión exitosa a la base de datos');
+      crearAdminInicial();
+  })
+  .catch(err => console.error('❌ Error al conectar:', err));
 
 // 6º Esquema y Modelo
 const productoSchema = new mongoose.Schema({

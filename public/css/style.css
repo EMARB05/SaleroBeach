@@ -421,7 +421,14 @@ header {
     color: white;
     padding: 5px 12px;
     border-radius: 15px;
-    font-size: 0.7rem;
+    
     font-weight: bold;
+}
+
+.status-badge.canceled {
+    background-color: #777777; /* Rojo */
+    color: white;
+    padding: 5px 8px;
+    border-radius: 15px;
 }
 
