@@ -2,7 +2,7 @@
 const productos = [
     // --- SECCIÓN COMIDA (Food Category) ---
     // Usamos las imágenes que tienes en tu carpeta public/img/
-    { id: 'f1', nombre: 'Pulpo a la Feira', precio: 18.00, cat: 'Cocina', sub: 'Food', img: '../img/clienteImg/cabezera.png' },
+    { id: 'f1', nombre: 'Pulpo a la Feira', precio: 18.00, cat: 'Cocina', sub: 'Food', img: './img/clienteImg/pulpoFeira.png' },
     { id: 'f2', nombre: 'Pimientos Padrón', precio: 6.50, cat: 'Cocina', sub: 'Food', img: '../img/pimientosPadron.png' },
     { id: 'f3', nombre: 'Tortilla Española', precio: 12.00, cat: 'Cocina', sub: 'Food', img: '../img/tortilla.png' },
 

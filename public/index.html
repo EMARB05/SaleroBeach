@@ -29,7 +29,7 @@
         <section class="categories-section">
             <div class="section-header">
                 <h2>Food Category</h2>
-                <span class="arrow-more">→</span>
+                <span class="arrow-more" onclick="verTodo('Food')">→</span>
             </div>
             <div id="cat-food" class="horizontal-scroll"></div>
         </section>
@@ -37,7 +37,7 @@
         <section class="categories-section">
             <div class="section-header">
                 <h2>Drinks</h2>
-                <span class="arrow-more">→</span>
+                <span class="arrow-more" onclick="verTodo('Drinks')">→</span>
             </div>
             <div id="cat-drinks" class="horizontal-scroll"></div>
         </section>
@@ -59,6 +59,23 @@
             <button class="btn-confirmar" onclick="enviarABarra()">Confirmar y Pedir</button>
         </div>
     </div>
+</div>
+
+<div id="vista-categoria" class="pantalla-completa">
+    <div class="header-iconos">
+        <button class="btn-volver" onclick="cerrarVista()">←</button>
+        <div class="iconos-derecha">
+            <span class="icon-menu">☰</span>
+            <span class="icon-cart" onclick="mostrarCarrito()">🛒 0</span>
+        </div>
+    </div>
+
+    <div class="search-container-detalle">
+        <input type="text" class="buscador-detalle" placeholder="Search Food Here" oninput="filtrarEnDetalle()">
+    </div>
+
+    <h2 id="titulo-categoria">Categoría</h2>
+    <div id="lista-detallada"></div>
 </div>
 
     <script src="./js/productos.js"></script>
