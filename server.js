@@ -17,10 +17,34 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 5º Conexión a MongoDB
+
+
+// 1. Esquema y Modelo de Usuarios
+const usuarioSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    nombreReal: String
+});
+const Usuario = mongoose.model('Usuario', usuarioSchema, 'usuarios');
+
+  // Función para crear el admin inicial si no existe
+async function crearAdminInicial() {
+    const existe = await Usuario.findOne({ username: 'Admin1_resto' });
+    if (!existe) {
+        await Usuario.create({
+            username: 'Admin1_resto',
+            password: 'abc123.', // Pon la que quieras
+            nombreReal: 'Staff_Barra'
+        });
+        console.log("👤 Usuario Admin1_resto creado con éxito");
+    }
+}
+// Llama a la función después de conectar a Mongo
 mongoose.connect('mongodb://localhost:27017/SaleroBeach')
-  .then(() => console.log('✅ Conectado a MongoDB: SaleroBeach'))
-  .catch(err => console.error('❌ Error al conectar a Mongo:', err));
+  .then(() => {
+      console.log('✅ Conectado a MongoDB');
+      crearAdminInicial(); // <-- Añade esta línea aquí
+  });
 
 // 6º Esquema y Modelo
 const productoSchema = new mongoose.Schema({
@@ -48,6 +72,7 @@ app.get('/api/productos', async (req, res) => {
 const pedidoSchema = new mongoose.Schema({
     items: Array,        // Aquí guardaremos la lista de productos del carrito
     total: Number,       // El precio total del pedido
+    mesa: String,
     fecha: { type: Date, default: Date.now }, // Para saber cuándo se hizo el pedido
     estado: { type: String, default: 'Pendiente' } // Para que el camarero sepa si está listo
 });
@@ -97,6 +122,25 @@ app.patch('/api/pedidos/:id/pagar', async (req, res) => {
         res.send("Pedido pagado correctamente");
     } catch (error) {
         res.status(500).send("Error al procesar el pago");
+    }
+});
+
+
+
+// 2. RUTA POST para el Login
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        // Buscamos un usuario que coincida exactamente con lo enviado
+        const user = await Usuario.findOne({ username, password });
+
+        if (user) {
+            res.json({ success: true, nombre: user.nombreReal });
+        } else {
+            res.status(401).json({ success: false, mensaje: "Credenciales inválidas" });
+        }
+    } catch (error) {
+        res.status(500).send("Error en el servidor");
     }
 });
 

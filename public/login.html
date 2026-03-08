@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Salero Bar</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="logo-s"><img src="./img/logoSalero.png"></div>
+        
+        <p class="login-msg">Use the details provided by your account administrator.</p>
+
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Admin1_resto">
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+
+        <button onclick="manejarLogin()" class="btn-signin">Sign in</button>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

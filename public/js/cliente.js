@@ -1,3 +1,13 @@
+// Al cargar la web del cliente
+const urlParams = new URLSearchParams(window.location.search);
+const mesaActual = urlParams.get('mesa') || 'Barra';
+
+// Opcional: Mostrar un mensaje de bienvenida
+console.log("Sistema Salero: Detectada Mesa " + mesaActual);
+// Puedes poner un alert o un texto en el HTML:
+// document.getElementById('info-mesa').innerText = "Mesa: " + mesaActual;
+
+
 let productos = [];
 let carrito = [];
 
@@ -175,8 +185,10 @@ async function enviarABarra() {
 
     // Preparamos el objeto con la información que pide el servidor
    const datosPedido = {
+    mesa: mesaActual,
     // Creamos una copia limpia sin los _id de la base de datos
     items: carrito.map(p => ({
+
         nombre: p.nombre,
         precio: p.precio,
         imagen: p.imagen, // ✅ Ahora la Barra tendrá la foto
@@ -195,7 +207,7 @@ async function enviarABarra() {
         });
 
         if (respuesta.ok) {
-            alert("¡Pedido enviado a barra! Enseguida te lo servimos 🍻");
+            alert(`¡Pedido enviado a barra! (mesa ${mesaActual})🍻`);
             
             // Limpiamos todo tras el éxito
             carrito = [];

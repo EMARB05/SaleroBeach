@@ -1,0 +1,69 @@
+.login-page {
+    background-color: #1a1c23; /* Fondo oscuro */
+    background-image: radial-gradient(circle at left, #d3540033, transparent 40%),
+                      radial-gradient(circle at right, #e67e2233, transparent 40%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+    font-family: sans-serif;
+}
+
+.login-container {
+    width: 350px;
+    text-align: center;
+}
+
+/*Estilo del logo*/
+.logo-s {
+    margin-bottom: 30px; /* Espacio con el texto de abajo */
+    display: flex;
+    justify-content: center;
+}
+
+.logo-s img {
+    width: 130px;       /* Ajusta este valor según te guste de grande */
+    height: auto;        /* Mantiene la proporción para que no se vea estirado */
+    object-fit: contain; /* Asegura que la imagen quepa bien en el espacio */
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+    background: #252833;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+.input-group label { color: #d35400; font-size: 12px; display: block; }
+
+.input-group input {
+    background: transparent;
+    border: none;
+    color: white;
+    width: 100%;
+    outline: none;
+    padding-top: 5px;
+}
+
+.btn-signin {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(to right, #f39c12, #d35400); /* Tu naranja degradado */
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-msg {
+    color: #888;         /* Color gris suave */
+    font-size: 0.85rem;   /* Tamaño pequeño */
+    line-height: 1.4;    /* Espaciado entre líneas */
+    margin-bottom: 30px; /* Separación con los inputs */
+    padding: 0 20px;     /* Para que no toque los bordes */
+}

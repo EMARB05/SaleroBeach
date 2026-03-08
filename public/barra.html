@@ -17,8 +17,8 @@
                 <ul>
                     <li onclick="mostrarHome()" id="btn-home"><i
                                 class="fas fa-utensils"></i> HOME</li>
-                    <li class="active" onclick="mostrarPedidosActivos()" id="btn-barra"><i class="fas fa-glass-martini-alt"></i> BARRA</li>
                     <li onclick="mostrarHistorial()" id="btn-history"><i class="fas fa-history"></i> HISTORY</li>
+                    <li class="active" onclick="mostrarPedidosActivos()" id="btn-barra"><i class="fas fa-glass-martini-alt"></i>PRODUCTS</li>
                 </ul>
             </nav>
             <div class="status-container">
@@ -30,12 +30,12 @@
         <main class="order-list">
             <header>
                 <div class="header-top">
-                    <h1>POS - CONTROL DE CAJA</h1>
+                    <h1 id="main-title">POS - CONTROL DE CAJA</h1>
                     <div class="user-profile">
-                        <div class="user-info">
-                            <span class="user-avatar">B</span> <span class="user-name">Staff_Barra</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
+                       <div class="user-info" onclick="cerrarSesion()" style="cursor: pointer;">
+    <span class="user-avatar">B</span> 
+    <span class="user-name">Staff_Barra</span>
+    <i class="fas fa-sign-out-alt"></i> </div>
                         <i class="fas fa-bell notification-icon"></i>
                     </div>
                 </div>

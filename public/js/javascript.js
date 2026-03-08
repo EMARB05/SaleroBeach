@@ -1,3 +1,11 @@
+(function comprobarSesion() {
+    const usuario = localStorage.getItem('usuarioNombre');
+    
+    if (!usuario) {
+        // Si no hay nadie logueado, lo mandamos al diseño naranja
+        window.location.href = 'login.html';
+    }
+})();
 // 1. Datos Unificados (Sustituye a 'pedidosActivos')
 let todasLasComandas = [];
 
@@ -153,7 +161,7 @@ async function obtenerPedidosDeDB() {
         todasLasComandas = pedidosDB.map(p => ({
             id: p._id.slice(-3),
             mongoId: p._id, // IMPORTANTE: Necesitamos el ID real de Mongo para el PATCH
-            mesa: "3", 
+            mesa: p.mesa || "Barra", 
             articulos: p.items,
             total: p.total
         }));
@@ -187,23 +195,39 @@ async function cobrarMesa(idDisplay) {
 }
 
 async function mostrarHistorial() {
-    actualizarMenuActivo('btn-history'); // Ahora brillará HISTORY
+    actualizarMenuActivo('btn-history');
     document.querySelector('.cards-container').style.display = 'none';
-    document.getElementById('history-view').style.display = 'block';
-    // 1. Ocultamos las tarjetas y mostramos la vista de tabla
-    document.querySelector('.cards-container').style.display = 'none';
+   // 1. OCULTAMOS LO QUE NO NECESITAMOS
+    document.querySelector('.cards-container').style.display = 'none'; // Tarjetas
+    document.querySelector('.order-tabs').style.display = 'none';      // Los botones #c35
+    document.getElementById('main-title').style.display = 'none';              // El título POS
+
+    // 2. MOSTRAMOS EL HISTORIAL
     const viewHistory = document.getElementById('history-view');
     viewHistory.style.display = 'block';
 
     try {
-        // 2. Traemos solo los pedidos 'Pagado' de la DB
         const respuesta = await fetch('http://localhost:3000/api/pedidos/historial');
         const historial = await respuesta.json();
         const tbody = document.getElementById('history-body');
         
         tbody.innerHTML = historial.map(pedido => {
-            // Agrupamos nombres para que la columna "Menu" no sea un caos
-            const nombresItems = pedido.items.map(i => i.nombre).join(', ');
+            // --- 1. AGRUPAR ITEMS PARA LA TABLA ---
+            const agrupados = pedido.items.reduce((acc, item) => {
+                const existe = acc.find(a => a.nombre === item.nombre);
+                if (existe) {
+                    existe.cantidad += 1;
+                } else {
+                    acc.push({ ...item, cantidad: 1 });
+                }
+                return acc;
+            }, []);
+
+            // --- 2. CREAR EL TEXTO "Producto (Cantidad)" ---
+            const textoMenu = agrupados
+                .map(prod => `${prod.nombre} (${prod.cantidad})`)
+                .join(', ');
+
             const fechaFormateada = new Date(pedido.fecha).toLocaleString();
 
             return `
@@ -212,8 +236,8 @@ async function mostrarHistorial() {
                     <td>#${pedido._id.slice(-5)}</td>
                     <td>
                         <div class="menu-info">
-                            <strong>${nombresItems}</strong><br>
-                            <span>${pedido.total.toFixed(2)}€</span>
+                            <strong>${textoMenu}</strong><br>
+                            <span class="history-price">${pedido.total.toFixed(2)}€</span>
                         </div>
                     </td>
                     <td>${fechaFormateada}</td>
@@ -236,7 +260,22 @@ function actualizarMenuActivo(idBoton) {
 
 function mostrarHome() {
     actualizarMenuActivo('btn-home');
+    // 1. VOLVEMOS A MOSTRAR LO DEL HOME/BARRA
+    const tituloPrincipal = document.getElementById('main-title');
+    if (tituloPrincipal) tituloPrincipal.style.display = 'block'; // Mostramos "POS - CONTROL DE CAJA"
+    
+    const tabs = document.querySelector('.order-tabs');
+    if (tabs) tabs.style.display = 'flex'; // Mostramos los botones #c35
+
+    const cards = document.querySelector('.cards-container');
+    if (cards) cards.style.display = 'flex'; // Mostramos las tarjetas
     document.getElementById('history-view').style.display = 'none';
     document.querySelector('.cards-container').style.display = 'flex';
     obtenerPedidosDeDB();
+}
+function cerrarSesion() {
+    if (confirm("¿Seguro que quieres cerrar sesión, fiera?")) {
+        localStorage.removeItem('usuarioNombre');
+        window.location.href = 'login.html';
+    }
 }

@@ -291,13 +291,19 @@ header {
     flex-direction: column; /* Apila los elementos uno debajo de otro */
     gap: 20px; /* Espacio entre el título y las pestañas */
     margin-bottom: 30px;
+  
+    
 }
 
 .header-top {
     display: flex;
-    justify-content: space-between; /* Empuja el título a la izquierda y el perfil a la derecha */
+    justify-content: flex-end; /* Empuja el título a la izquierda y el perfil a la derecha */
     align-items: center;
     width: 100%;
+    min-height: 60px;
+}
+#main-title {
+    margin-right: auto; /* Esta es la clave: empuja al vecino a la derecha */
 }
 
 
