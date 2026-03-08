@@ -13,6 +13,7 @@ function renderizarPedidos(filtroId = null) {
     const contenedorTabs = document.querySelector('.order-tabs');
     const esBarra = document.body.classList.contains('bar-view');
 
+    // 1. Dibujar las pestañas superiores
     contenedorTabs.innerHTML = todasLasComandas.map(p => `
         <span class="tab ${filtroId === p.id ? 'active' : ''}" 
               onclick="filtrarPorPedido('${p.id}')">#${p.id}</span>
@@ -25,10 +26,23 @@ function renderizarPedidos(filtroId = null) {
     contenedor.innerHTML = '';
 
     pedidosAMostrar.forEach(pedido => {
-        // --- 1. AQUÍ VA EL CÁLCULO (Fuera del HTML) ---
+        // --- A. CÁLCULO DEL TOTAL ---
         const totalComanda = pedido.articulos.reduce((acc, art) => acc + (art.precio || 0), 0);
 
-        // --- 2. AQUÍ EMPIEZA EL HTML ---
+        // --- B. AGRUPACIÓN DE PRODUCTOS REPETIDOS ---
+        // Esto evita que salgan 5 filas de pulpo si piden 5 pulpos
+        const articulosAgrupados = pedido.articulos.reduce((acc, art) => {
+            // Buscamos si ya existe el producto con el mismo nombre y nota
+            const existe = acc.find(item => item.nombre === art.nombre && item.nota === art.nota);
+            if (existe) {
+                existe.cantidad += 1;
+            } else {
+                acc.push({ ...art, cantidad: 1 });
+            }
+            return acc;
+        }, []);
+
+        // --- C. GENERACIÓN DEL HTML DE LA TARJETA ---
         const cardHTML = `
             <article class="order-card" data-order-id="${pedido.id}">
                 <div class="card-header">
@@ -36,37 +50,36 @@ function renderizarPedidos(filtroId = null) {
                     <div class="alert-icon">!</div>
                 </div>
                 <div class="product-list">
-                    ${pedido.articulos.map(art => `
+                    ${articulosAgrupados.map(art => `
                         <div class="product-item">
                             <img src="${art.imagen}" alt="${art.nombre}">
                             <div class="details">
-    <h3>${art.nombre} <span class="badge ${(art.sub || '').toLowerCase() === 'food' ? 'badge-cocina' : 'badge-barra'}">
-        ${(art.sub || '').toLowerCase() === 'food' ? 'COCINA' : 'BARRA'}
-    </span>
-</h3>
-    ${art.nota ? `<p class="note">${art.nota}</p>` : ''}
-    
-    ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
-</div>
-                            <span class="qty">Qty: 1</span>
+                                <h3>${art.nombre} 
+                                    <span class="badge ${(art.sub || '').toLowerCase() === 'food' ? 'badge-cocina' : 'badge-barra'}">
+                                        ${(art.sub || '').toLowerCase() === 'food' ? 'COCINA' : 'BARRA'}
+                                    </span>
+                                </h3>
+                                ${art.nota ? `<p class="note">${art.nota}</p>` : ''}
+                                ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
+                            </div>
+                            <span class="qty">Qty: ${art.cantidad}</span>
                         </div>
                     `).join('')}
                 </div>
                 <div class="total-items">
                     <hr class="separator">
                     <div class="info-footer">
-    <div class="total-price-section">
-        <p class="qty-total">x${pedido.articulos.length} Items</p>
-        
-        ${esBarra ? `<p class="total-amount">${totalComanda.toFixed(2)}€</p>` : ''}
-    </div>
-    <h3 class="table-id">Mesa ${pedido.mesa}</h3>
-</div>
+                        <div class="total-price-section">
+                            <p class="qty-total">x${pedido.articulos.length} Items</p>
+                            ${esBarra ? `<p class="total-amount">${totalComanda.toFixed(2)}€</p>` : ''}
+                        </div>
+                        <h3 class="table-id">Mesa ${pedido.mesa}</h3>
+                    </div>
                     <div class="card-buttons">
                         ${esBarra
-                ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
-                : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
-            }
+                            ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
+                            : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
+                        }
                         <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
                     </div>
                 </div>

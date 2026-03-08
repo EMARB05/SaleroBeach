@@ -15,6 +15,7 @@ body {
 
 /* Sidebar Estilo Salero */
 .sidebar {
+    position: fixed;
     width: 250px;
     background-color: #1F1D2B;
     border-right: 1px solid #393C49;
@@ -23,6 +24,7 @@ body {
     padding: 24px 10px; /* Un poco de espacio a los lados */
     height: 100vh;
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .logo {
@@ -38,6 +40,10 @@ body {
 .order-list {
     flex: 1;
     padding: 30px;
+}
+.order-list {
+    margin-left: 250px; /* Debe ser igual al ancho del sidebar */
+    width: calc(100% - 250px);
 }
 .order-tabs {
     display: flex;
@@ -68,6 +74,7 @@ color: aliceblue;
     display: flex;
     flex-wrap: wrap; /* Para que las tarjetas se pongan una al lado de otra */
     gap: 20px;
+    align-items: flex-start;
 }
 
 /* La Tarjeta de Pedido (La que agrandamos) */
@@ -160,6 +167,7 @@ color: aliceblue;
 
 /* 2. La lista del menú (Alineada a la izquierda) */
 .sidebar nav ul {
+    
     list-style: none;
     padding: 0;
     margin: 0;
@@ -167,6 +175,7 @@ color: aliceblue;
     display: flex;
     flex-direction: column;
     gap: 10px; /* Espacio entre cada botón */
+    
 }
 
 /* 3. Cada botón del menú (Apagado) */
