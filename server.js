@@ -107,12 +107,14 @@ app.get('/api/pedidos/pendientes', async (req, res) => {
     }
 });
 
-// 3. Ruta para el HISTORY (Solo pagados)
+// 3. Ruta para el HISTORY 
 app.get('/api/pedidos/historial', async (req, res) => {
-    const historial = await Pedido.find({ estado: 'Pagado','Cancelado' }).sort({ fecha: -1 });
+    // Buscamos tanto Pagados como Cancelados
+    const historial = await Pedido.find({ 
+        estado: { $in: ['Pagado', 'Cancelado'] } 
+    }).sort({ fecha: -1 });
     res.json(historial);
 });
-
 // 4. Ruta para CAMBIAR A PAGADO (PATCH)
 app.patch('/api/pedidos/:id/pagar', async (req, res) => {
     try {
