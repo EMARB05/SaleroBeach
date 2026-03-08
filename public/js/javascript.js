@@ -110,12 +110,19 @@ function completarPedido(id) {
 
 
 
-function cancelarPedido(id, sinConfirmar = false) {
-    if (sinConfirmar || confirm("¿Estás seguro de que quieres eliminar este pedido?")) {
-        const index = todasLasComandas.findIndex(p => p.id === id);
-        if (index > -1) todasLasComandas.splice(index, 1);
-        localStorage.removeItem(`order-${id}`);
-        renderizarPedidos();
+async function cancelarPedido(mongoId) {
+    if (!confirm("¿Seguro que quieres cancelar este pedido, fiera?")) return;
+
+    try {
+        const respuesta = await fetch(`http://localhost:3000/api/pedidos/${mongoId}/cancelar`, {
+            method: 'PATCH' // ✅ Ahora es un PATCH
+        });
+
+        if (respuesta.ok) {
+            obtenerPedidosDeDB(); 
+        }
+    } catch (error) {
+        console.error("Error al conectar con el servidor:", error);
     }
 }
 

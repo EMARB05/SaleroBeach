@@ -93,25 +93,23 @@ app.post('/api/pedidos', async (req, res) => {
 });
 
 
-// SUSTITUYE TU app.get('/api/pedidos') POR ESTA:
 app.get('/api/pedidos/pendientes', async (req, res) => {
     try {
-        // Buscamos los que NO estén pagados ($ne significa "not equal")
-        // Así te saldrán los nuevos y los que no tengan el campo estado todavía
+        // ✅ SOLO queremos los que están estrictamente en 'Pendiente'
+        // Esto ignorará automáticamente los 'Pagados' y los 'Cancelados'
         const pedidos = await Pedido.find({ 
-            estado: { $ne: 'Pagado' } 
+            estado: 'Pendiente' 
         }).sort({ fecha: -1 }); 
         
         res.json(pedidos);
     } catch (error) {
-        console.error("Error en /api/pedidos/pendientes:", error);
         res.status(500).send("Error al obtener pedidos pendientes");
     }
 });
 
 // 3. Ruta para el HISTORY (Solo pagados)
 app.get('/api/pedidos/historial', async (req, res) => {
-    const historial = await Pedido.find({ estado: 'Pagado' }).sort({ fecha: -1 });
+    const historial = await Pedido.find({ estado: 'Pagado','Cancelado' }).sort({ fecha: -1 });
     res.json(historial);
 });
 
@@ -141,6 +139,16 @@ app.post('/api/login', async (req, res) => {
         }
     } catch (error) {
         res.status(500).send("Error en el servidor");
+    }
+});
+
+app.patch('/api/pedidos/:id/cancelar', async (req, res) => {
+    try {
+        // ✅ Cambiamos el estado a Cancelado en lugar de borrarlo
+        await Pedido.findByIdAndUpdate(req.params.id, { estado: 'Cancelado' });
+        res.send("Pedido cancelado con éxito");
+    } catch (error) {
+        res.status(500).send("Error al cancelar el pedido");
     }
 });
 
