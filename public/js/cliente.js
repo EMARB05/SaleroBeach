@@ -145,10 +145,47 @@ function cambiarCantidad(id, cambio) {
     mostrarCarrito(); 
 }
 // Función para cerrar y volver al menú principal
-function cerrarVista() {
-    document.getElementById('vista-categoria').classList.remove('activo');
+// --- FUNCIONES PARA LA VISTA DETALLADA ("VER TODO") ---
+
+function verTodo(categoria) {
+    const vista = document.getElementById('vista-categoria');
+    const lista = document.getElementById('lista-detallada');
+    const titulo = document.getElementById('titulo-categoria');
+
+    if (!vista || !lista || !titulo) return;
+
+    // Cambiamos el título según la categoría
+    titulo.innerText = categoria === 'Food' ? 'Food Category' : 'Drinks';
+    lista.innerHTML = '';
+
+    // Filtramos los productos que ya descargamos de MongoDB
+    const productosFiltrados = productos.filter(p => p.sub === categoria);
+
+    // Dibujamos los productos en la nueva pantalla
+    productosFiltrados.forEach(prod => {
+        lista.innerHTML += `
+            <div class="item-lista-pro">
+                <img src="${prod.imagen}" alt="${prod.nombre}">
+                <div class="info">
+                    <h3>${prod.nombre}</h3>
+                    <span>${Number(prod.precio).toFixed(2)}€</span>
+                </div>
+                <button class="btn-add-detalle" onclick="agregarAlCarrito('${prod.id}')">Add Cart</button>
+            </div>
+        `;
+    });
+
+    // Activamos la vista (el CSS se encarga de mostrarla)
+    vista.classList.add('activo');
 }
 
+// Función para cerrar la vista y volver al menú principal
+function cerrarVista() {
+    const vista = document.getElementById('vista-categoria');
+    if (vista) {
+        vista.classList.remove('activo');
+    }
+}
 async function enviarABarra() {
     if (carrito.length === 0) {
         alert("El carrito está vacío, ¡pide algo rico! 🌮");
