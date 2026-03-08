@@ -178,7 +178,9 @@ async function enviarABarra() {
     // Creamos una copia limpia sin los _id de la base de datos
     items: carrito.map(p => ({
         nombre: p.nombre,
-        precio: p.precio
+        precio: p.precio,
+        imagen: p.imagen, // ✅ Ahora la Barra tendrá la foto
+        sub: p.sub
     })), 
     total: totalPedido
 };
