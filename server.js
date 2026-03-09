@@ -107,9 +107,8 @@ app.post('/api/pedidos', async (req, res) => {
 
 app.get('/api/pedidos/pendientes', async (req, res) => {
     try {
-        // Incluimos 'Cancelado' para que la barra lo vea antes de borrarlo
         const pedidos = await Pedido.find({ 
-            estado: { $in: ['Pendiente', 'Listo', 'Cancelado'] } 
+            estado: { $in: ['Pendiente', 'Listo'] } 
         }).sort({ fecha: -1 }); 
         
         res.json(pedidos);
@@ -117,8 +116,7 @@ app.get('/api/pedidos/pendientes', async (req, res) => {
         res.status(500).send("Error al obtener pedidos");
     }
 });
-
-// 3. Ruta para el HISTORY 
+//Ruta para el HISTORY 
 app.get('/api/pedidos/historial', async (req, res) => {
     try {
         const historial = await Pedido.find({ 
