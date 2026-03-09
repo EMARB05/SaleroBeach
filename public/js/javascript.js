@@ -89,7 +89,7 @@ function renderizarPedidos(filtroId = null) {
                                 ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
                             </div>
                             <span class="qty">Qty: ${art.cantidad}</span>
-                            ${esBarra ? `<button class="btn-delete-item" onclick="quitarArticulo('${pedido.id}', '${art.nombre}')">🗑️</button>` : ''}
+                           ${esBarra ? `<button class="btn-delete-item" onclick="quitarArticulo('${pedido.mongoId}', '${art.nombre}')">🗑️</button>` : ''}
                         </div>
                     `).join('')}
                 </div>

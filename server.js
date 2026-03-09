@@ -177,25 +177,26 @@ app.patch('/api/pedidos/:id/quitar-item', async (req, res) => {
         const { id } = req.params;
         const { nombre } = req.body;
 
-        // Usamos $pull de MongoDB para eliminar el primer artículo que coincida con ese nombre
-        // Esto evita que si hay 2 tortillas, se borren las 2 a la vez si no quieres
-        const pedidoActualizado = await Pedido.findByIdAndUpdate(
+        // Quitamos el ítem del array
+        const pedido = await Pedido.findByIdAndUpdate(
             id,
             { $pull: { items: { nombre: nombre } } }, 
-            { new: true } // Para que devuelva el pedido ya modificado
+            { new: true }
         );
 
-        if (pedidoActualizado) {
-            res.json({ mensaje: "Artículo eliminado", pedido: pedidoActualizado });
-        } else {
-            res.status(404).send("Pedido no encontrado");
-        }
+        if (!pedido) return res.status(404).send("Pedido no encontrado");
+
+        //Recalculamos el total del pedido en la DB
+        const nuevoTotal = pedido.items.reduce((acc, item) => acc + (item.precio || 0), 0);
+        pedido.total = nuevoTotal;
+        await pedido.save();
+
+        res.json({ mensaje: "Artículo eliminado y total actualizado", pedido });
     } catch (error) {
         console.error("Error al quitar item:", error);
-        res.status(500).send("Error interno al quitar el artículo");
+        res.status(500).send("Error interno");
     }
 });
-
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Salero Bar funcionando en http://localhost:${PORT}`);
