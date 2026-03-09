@@ -150,34 +150,47 @@ function completarPedido(id) {
     }
 }
 
-async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
-    if (!confirm("¿Seguro que quieres cancelar este pedido, fiera?")) return;
+async function cancelarPedido(idCorto) {
+    if (!confirm("¿Seguro que quieres cancelar este pedido?")) return;
+
+    // 1. Buscamos el pedido en nuestro array local para sacar el mongoId
+    const pedido = todasLasComandas.find(p => p.id === idCorto);
+    if (!pedido) return;
 
     try {
-        // 1. Buscamos el objeto completo en nuestro array local para sacar el mongoId
-        const pedido = todasLasComandas.find(p => p.id === idCorto);
-
-        if (!pedido) {
-            console.error("No se encontró el pedido localmente");
-            return;
-        }
-
-        // 2. Hacemos el fetch usando el mongoId real
         const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/cancelar`, {
             method: 'PATCH'
         });
 
         if (respuesta.ok) {
-            // 3. ¡IMPORTANTE! Limpiamos el filtro de pestañas para que no intente 
-            // renderizar un pedido que ya no va a existir en 'pendientes'
-            obtenerPedidosDeDB();
-            console.log("Pedido cancelado con éxito");
+            // --- AQUÍ ESTÁ EL TRUCO ---
+            // 2. Buscamos la tarjeta en el HTML usando el ID corto
+            const tarjeta = document.querySelector(`[data-order-id="${idCorto}"]`);
+            
+            if (tarjeta) {
+                // Le damos una pequeña animación de salida para que quede pro
+                tarjeta.style.transition = "all 0.4s ease";
+                tarjeta.style.opacity = "0";
+                tarjeta.style.transform = "scale(0.9)";
+
+                setTimeout(() => {
+                    // 3. La eliminamos físicamente del HTML
+                    tarjeta.remove();
+                    
+                    // 4. Actualizamos nuestro array local para que la cuenta de "pedidos activos" sea real
+                    todasLasComandas = todasLasComandas.filter(p => p.id !== idCorto);
+                    
+                    console.log(`Pedido ${idCorto} eliminado de la vista.`);
+                }, 400);
+            }
+        } else {
+            alert("El servidor no pudo cancelar el pedido.");
         }
     } catch (error) {
-        console.error("Error al conectar con el servidor:", error);
+        console.error("Error al cancelar:", error);
+        alert("Error de conexión al intentar cancelar.");
     }
 }
-
 
 function comprobarPedidosGuardados() {
     const orders = document.querySelectorAll('.order-card');

@@ -162,17 +162,17 @@ async function obtenerPedidosCocina() {
             estado: p.estado // Guardamos el estado por si acaso
         }));
         
-        // Dibujamos las tarjetas en la pantalla
+        // 4. Dibujamos las tarjetas en la pantalla
         renderizarPedidosCocina();
 
     } catch (error) {
         console.error("Error conectando con la DB:", error);
     }
 }
-async function cancelarPedido(idCorto) {
-    if (!confirm("¿Seguro que quieres cancelar este pedido?")) return;
 
-    // Buscamos el pedido en nuestro array local para sacar el mongoId
+async function cancelarPedido(idCorto) {
+    if (!confirm("¿Seguro que quieres cancelar este pedido de comida?")) return;
+
     const pedido = todasLasComandas.find(p => p.id === idCorto);
     if (!pedido) return;
 
@@ -182,32 +182,11 @@ async function cancelarPedido(idCorto) {
         });
 
         if (respuesta.ok) {
-           
-            // Buscamos la tarjeta en el HTML usando el ID corto
-            const tarjeta = document.querySelector(`[data-order-id="${idCorto}"]`);
-            
-            if (tarjeta) {
-                // Le damos una pequeña animación de salida para que quede pro
-                tarjeta.style.transition = "all 0.4s ease";
-                tarjeta.style.opacity = "0";
-                tarjeta.style.transform = "scale(0.9)";
-
-                setTimeout(() => {
-                    // 3. La eliminamos físicamente del HTML
-                    tarjeta.remove();
-                    
-                    // 4. Actualizamos nuestro array local para que la cuenta de "pedidos activos" sea real
-                    todasLasComandas = todasLasComandas.filter(p => p.id !== idCorto);
-                    
-                    console.log(`Pedido ${idCorto} eliminado de la vista.`);
-                }, 400);
-            }
-        } else {
-            alert("El servidor no pudo cancelar el pedido.");
+            // Refrescamos inmediatamente para que desaparezca
+            obtenerPedidosCocina();
         }
     } catch (error) {
         console.error("Error al cancelar:", error);
-        alert("Error de conexión al intentar cancelar.");
     }
 }
 
