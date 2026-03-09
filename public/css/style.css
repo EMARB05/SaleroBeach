@@ -140,24 +140,37 @@ color: aliceblue;
 }
 
 .btn-check {
-    background: linear-gradient(135deg, #FF7E5F, #FEB47B); /* Gradiente naranja */
+    background: linear-gradient(135deg, #FF7E5F, #FEB47B); /* Tu gradiente naranja */
     border: none;
-    flex: 1;
-    width: 100px;
+    outline: none;
     padding: 10px;
     border-radius: 8px;
     color: white;
+    font-weight: bold;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.2s, opacity 0.2s;
 }
 
+.btn-check-visual {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
 .btn-cancel {
-    background-color: #EA7C69; /* Rojo suave del diseño */
+    background-color: #EA7C69; /* El color rojizo de tu alerta */
     border: none;
+    outline: none;
     padding: 10px 15px;
     border-radius: 8px;
     color: white;
     cursor: pointer;
-    width: 100px;
+    font-weight: bold;
+    transition: transform 0.2s;
 }
 .contenedorBotones{
     display: flex;
@@ -244,6 +257,10 @@ color: aliceblue;
     height: 48px; /* Altura más cómoda para tocar en una pantalla de cocina */
 }
 
+.btn-check:hover, .btn-cancel:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
 .status-container {
     margin-top: auto; /* Lo empuja al fondo del sidebar */
     display: flex;
@@ -496,11 +513,12 @@ header {
 .visual-done h3 {
     text-decoration: line-through;
     color: #a0a0a0;
-    opacity: 0.7;
+    opacity: 0.5;
 }
 
 /* Efecto para el botón de check */
 .btn-check-visual:hover {
     transform: scale(1.1);
     border-color: #2ecc71 !important;
+    
 }

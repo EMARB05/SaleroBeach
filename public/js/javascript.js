@@ -103,12 +103,12 @@ function renderizarPedidos(filtroId = null) {
                         <h3 class="table-id">Mesa ${pedido.mesa}</h3>
                     </div>
                     <div class="card-buttons">
-                        ${esBarra
-                ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
-                : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
-            }
-                        <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
-                    </div>
+    ${esBarra
+        ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
+        : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
+    }
+    <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
+</div>
                 </div>
             </article>
         `;
