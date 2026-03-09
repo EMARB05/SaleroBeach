@@ -177,23 +177,28 @@ app.patch('/api/pedidos/:id/quitar-item', async (req, res) => {
         const { id } = req.params;
         const { nombre } = req.body;
 
-        // Quitamos el ítem del array
-        const pedido = await Pedido.findByIdAndUpdate(
-            id,
-            { $pull: { items: { nombre: nombre } } }, 
-            { new: true }
-        );
-
+        //Buscamos el pedido primero
+        const pedido = await Pedido.findById(id);
         if (!pedido) return res.status(404).send("Pedido no encontrado");
 
-        //Recalculamos el total del pedido en la DB
-        const nuevoTotal = pedido.items.reduce((acc, item) => acc + (item.precio || 0), 0);
-        pedido.total = nuevoTotal;
-        await pedido.save();
+        // Encontramos el índice de la PRIMERA coincidencia del artículo
+        const index = pedido.items.findIndex(item => item.nombre === nombre);
 
-        res.json({ mensaje: "Artículo eliminado y total actualizado", pedido });
+        if (index > -1) {
+            //  Eliminamos solo ese elemento del array
+            pedido.items.splice(index, 1);
+            
+            // Recalculamos el total con lo que queda
+            pedido.total = pedido.items.reduce((acc, item) => acc + (item.precio || 0), 0);
+            
+            //Guardamos los cambios en MongoDB
+            await pedido.save();
+            res.json({ mensaje: "Un artículo eliminado", pedido });
+        } else {
+            res.status(404).send("El artículo ya no está en el pedido");
+        }
     } catch (error) {
-        console.error("Error al quitar item:", error);
+        console.error("Error al quitar item uno a uno:", error);
         res.status(500).send("Error interno");
     }
 });

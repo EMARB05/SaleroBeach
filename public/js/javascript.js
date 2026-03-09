@@ -69,7 +69,7 @@ function renderizarPedidos(filtroId = null) {
             <h2>
                 Order #${pedido.id} 
                 ${esListo ? '<span class="ready-badge"> LISTO</span>' : ''}
-                ${esCancelado ? '<span class="cancel-badge">❌ CANCELADO</span>' : ''}
+                ${esCancelado ? '<span class="cancel-badge"> CANCELADO</span>' : ''}
             </h2>
             <div class="alert-icon">!</div>
         </div>
