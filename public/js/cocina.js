@@ -13,10 +13,9 @@ function obtenerDiferenciaTiempo(timestamp) {
 // 2. Función principal para pintar las tarjetas (Filtrando comida)
 function renderizarPedidosCocina(filtroId = null) {
     const contenedor = document.getElementById('seccion-pedidos');
-    const contenedorTabs = document.querySelector('.order-tabs'); // Asegúrate de tener este div en tu HTML
+    const contenedorTabs = document.querySelector('.order-tabs');
     contenedor.innerHTML = ''; 
 
-    // 1. Dibujar las pestañas con los IDs de los pedidos actuales
     if (contenedorTabs) {
         contenedorTabs.innerHTML = todasLasComandas.map(p => `
             <span class="tab ${filtroId === p.id ? 'active' : ''}" 
@@ -24,13 +23,11 @@ function renderizarPedidosCocina(filtroId = null) {
         `).join('');
     }
 
-    // 2. Decidir qué pedidos mostrar (uno solo o todos)
     const pedidosAMostrar = filtroId
         ? todasLasComandas.filter(p => p.id === filtroId)
         : todasLasComandas;
 
     pedidosAMostrar.forEach(pedido => {
-        // Filtramos solo los productos que son 'comida'
         const soloComida = pedido.articulos.filter(item => (item.sub || '').toLowerCase() === 'food');
         if (soloComida.length === 0) return;
 
@@ -44,15 +41,29 @@ function renderizarPedidosCocina(filtroId = null) {
                 </div>
                 
                 <div class="product-list">
-                    ${soloComida.map(item => `
-                        <div class="product-item no-img">
+                    ${soloComida.map(item => {
+                        // Revisamos si este plato específico está marcado como hecho en el navegador
+                        const llave = `check-${pedido.id}-${item.nombre}`;
+                        const estaHecho = localStorage.getItem(llave) === 'true';
+
+                        return `
+                        <div class="product-item no-img ${estaHecho ? 'visual-done' : ''}">
                             <div class="details">
-                                <h3>${item.nombre}</h3>
+                                <h3 style="${estaHecho ? 'text-decoration: line-through; opacity: 0.6;' : ''}">
+                                    ${item.nombre}
+                                </h3>
                                 ${item.nota ? `<p class="note">⚠️ ${item.nota.toUpperCase()}</p>` : ''}
                             </div>
                             <span class="qty">x${item.cantidad || 1}</span>
+                            
+                            <button class="btn-check-visual" 
+                                    style="background: none; border: 1px solid #ccc; cursor: pointer; font-size: 1.2rem; margin-left: 10px; border-radius: 4px;"
+                                    onclick="marcarVisual(this, '${pedido.id}', '${item.nombre}')">
+                                ${estaHecho ? '✅' : '⬜'}
+                            </button>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
 
                 <div class="total-items">
@@ -71,7 +82,6 @@ function renderizarPedidosCocina(filtroId = null) {
         contenedor.innerHTML += tarjeta;
     });
 }
-
 function mostrarSeccion(nombreSeccion) {
     const pedidos = document.getElementById('seccion-pedidos');
     const historial = document.getElementById('seccion-historial');
@@ -84,7 +94,7 @@ function mostrarSeccion(nombreSeccion) {
     } else {
         pedidos.style.display = 'none';
         historial.style.display = 'block';
-        cargarHistorialCocina(); // <--- ¡ESTA ES LA CLAVE!
+        cargarHistorialCocina(); //
     }
 
     // Lógica del brillo de los botones (el resto igual...)
@@ -96,7 +106,12 @@ function mostrarSeccion(nombreSeccion) {
     });
 }
 async function completarPedido(idCorto) {
-    // 1. Buscamos el pedido en nuestro array local para sacar el mongoId
+    Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(`check-${idCorto}`)) {
+            localStorage.removeItem(key);
+        }
+    });
+    // Buscamos el pedido en nuestro array local para sacar el mongoId
     const pedido = todasLasComandas.find(p => p.id === idCorto);
     
     if (!pedido) {
@@ -234,6 +249,21 @@ async function cargarHistorialCocina() {
     } catch (error) {
         console.error("Error al cargar historial en cocina:", error);
     }
+}
+
+function marcarVisual(boton, pedidoId, nombreArticulo) {
+    const llave = `check-${pedidoId}-${nombreArticulo}`;
+    const estaMarcadoActualmente = localStorage.getItem(llave) === 'true';
+
+    // Cambiamos el estado en el almacenamiento del navegador
+    if (estaMarcadoActualmente) {
+        localStorage.removeItem(llave);
+    } else {
+        localStorage.setItem(llave, 'true');
+    }
+
+    // Volvemos a pintar la pantalla inmediatamente para que se vea el cambio
+    renderizarPedidosCocina();
 }
 
 

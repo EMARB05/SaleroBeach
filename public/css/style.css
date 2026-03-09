@@ -486,3 +486,21 @@ header {
 .btn-delete-item:hover {
     transform: scale(1.2);
 }
+
+/* Estilo para el producto cuando el cocinero lo marca */
+.visual-done {
+    background-color: #f8f9fa; /* Gris muy clarito */
+    border-left: 5px solid #2ecc71; /* Una línea verde a la izquierda */
+}
+
+.visual-done h3 {
+    text-decoration: line-through;
+    color: #a0a0a0;
+    opacity: 0.7;
+}
+
+/* Efecto para el botón de check */
+.btn-check-visual:hover {
+    transform: scale(1.1);
+    border-color: #2ecc71 !important;
+}
