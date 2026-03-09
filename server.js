@@ -78,7 +78,8 @@ const pedidoSchema = new mongoose.Schema({
     items: [{
         nombre: String,
         precio: Number,
-        sub: String, // Para filtrar 'food' en cocina
+        sub: String,
+        imagen:String,
         nota: String,
         cantidad: { type: Number, default: 1 }
     }],
