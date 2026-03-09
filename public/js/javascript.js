@@ -1,6 +1,6 @@
 (function comprobarSesion() {
     const usuario = localStorage.getItem('usuarioNombre');
-    
+
     if (!usuario) {
         // Si no hay nadie logueado, lo mandamos al diseño naranja
         window.location.href = 'login.html';
@@ -13,7 +13,7 @@ let todasLasComandas = [];
 window.onload = () => {
     obtenerPedidosDeDB();
     // Actualizar automáticamente cada 15 segundos para ver pedidos nuevos
-    setInterval(obtenerPedidosDeDB, 15000); 
+    setInterval(obtenerPedidosDeDB, 15000);
 };
 // 3. Función principal de dibujo (Maneja Cocina y Barra)
 function renderizarPedidos(filtroId = null) {
@@ -34,11 +34,20 @@ function renderizarPedidos(filtroId = null) {
     contenedor.innerHTML = '';
 
     pedidosAMostrar.forEach(pedido => {
-        // --- NUEVO: Detectar si el pedido está listo para servir ---
+        //Detecta si el pedido está listo para servir ---
         const esListo = pedido.estado === 'Listo';
+        const esCancelado = pedido.estado === 'Cancelado';
 
         // --- A. CÁLCULO DEL TOTAL ---
-        const totalComanda = pedido.articulos.reduce((acc, art) => acc + (art.precio || 0), 0);
+        // --- CÁLCULO DEL TOTAL REAL ---
+        // --- A. CÁLCULO DEL TOTAL (Suma solo lo que NO esté cancelado o se haya quitado) ---
+        const totalComanda = pedido.articulos.reduce((acc, art) => {
+            // Si por algún motivo el artículo viene marcado como cancelado, no lo sumamos
+            if (art.cancelado === true) return acc;
+
+            // Sumamos el resto de artículos (bebidas y platos que sí se sirven)
+            return acc + (art.precio || 0);
+        }, 0);
 
         // --- B. AGRUPACIÓN DE PRODUCTOS REPETIDOS ---
         const articulosAgrupados = pedido.articulos.reduce((acc, art) => {
@@ -54,11 +63,16 @@ function renderizarPedidos(filtroId = null) {
         // --- C. GENERACIÓN DEL HTML DE LA TARJETA ---
         // Añadimos la clase 'order-ready' si el estado es 'Listo'
         const cardHTML = `
-            <article class="order-card ${esListo ? 'order-ready' : ''}" data-order-id="${pedido.id}">
-                <div class="card-header">
-                    <h2>Order #${pedido.id} ${esListo ? '<span class="ready-badge">✅ LISTO</span>' : ''}</h2>
-                    <div class="alert-icon">!</div>
-                </div>
+           
+           <article class="order-card ${esListo ? 'order-ready' : ''} ${esCancelado ? 'order-canceled' : ''}" data-order-id="${pedido.id}">
+        <div class="card-header">
+            <h2>
+                Order #${pedido.id} 
+                ${esListo ? '<span class="ready-badge"> LISTO</span>' : ''}
+                ${esCancelado ? '<span class="cancel-badge">❌ CANCELADO</span>' : ''}
+            </h2>
+            <div class="alert-icon">!</div>
+        </div>
                 <div class="product-list">
                     ${articulosAgrupados.map(art => `
                         <div class="product-item">
@@ -75,6 +89,7 @@ function renderizarPedidos(filtroId = null) {
                                 ${esBarra ? `<p class="price-item">${(art.precio || 0).toFixed(2)}€</p>` : ''}
                             </div>
                             <span class="qty">Qty: ${art.cantidad}</span>
+                            ${esBarra ? `<button class="btn-delete-item" onclick="quitarArticulo('${pedido.id}', '${art.nombre}')">🗑️</button>` : ''}
                         </div>
                     `).join('')}
                 </div>
@@ -89,9 +104,9 @@ function renderizarPedidos(filtroId = null) {
                     </div>
                     <div class="card-buttons">
                         ${esBarra
-                            ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
-                            : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
-                        }
+                ? `<button class="btn-pay" onclick="cobrarMesa('${pedido.id}')">💳 COBRAR CUENTA</button>`
+                : `<button class="btn-check" onclick="completarPedido('${pedido.id}')">✔ LISTO</button>`
+            }
                         <button class="btn-cancel" onclick="cancelarPedido('${pedido.id}')">✖</button>
                     </div>
                 </div>
@@ -106,7 +121,7 @@ function renderizarPedidos(filtroId = null) {
 // 4. Lógica de estados y botones
 function completarPedido(id) {
     const tarjeta = document.querySelector(`[data-order-id="${id}"]`);
-    
+
     if (tarjeta) {
         // 1. Feedback visual (Botón naranja de COMPLETADO)
         const btnCont = tarjeta.querySelector('.card-buttons');
@@ -114,7 +129,7 @@ function completarPedido(id) {
             btnCont.innerHTML = `<button class="btn-completed">✔ COMPLETADO</button>`;
         }
         tarjeta.classList.add('order-finished');
-        
+
         // 2. Persistencia temporal (opcional)
         localStorage.setItem(`order-${id}`, 'completed');
 
@@ -122,14 +137,13 @@ function completarPedido(id) {
         setTimeout(() => {
             tarjeta.style.transition = "0.3s"; // Asegúrate de que tenga transición
             tarjeta.style.opacity = "0";
-            
+
             setTimeout(() => {
                 tarjeta.remove();
-                
+
                 // 4. Actualizamos el array local para que el filtro por pestañas (#c35)
-                // no intente volver a dibujar un pedido que ya quitamos
                 todasLasComandas = todasLasComandas.filter(p => p.id !== id);
-                
+
                 console.log(`Pedido #${id} eliminado de la vista.`);
             }, 300);
         }, 1500);
@@ -142,7 +156,7 @@ async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
     try {
         // 1. Buscamos el objeto completo en nuestro array local para sacar el mongoId
         const pedido = todasLasComandas.find(p => p.id === idCorto);
-        
+
         if (!pedido) {
             console.error("No se encontró el pedido localmente");
             return;
@@ -150,13 +164,13 @@ async function cancelarPedido(idCorto) { // Recibe el ID de 3 letras (ej: 'a2b')
 
         // 2. Hacemos el fetch usando el mongoId real
         const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/cancelar`, {
-            method: 'PATCH' 
+            method: 'PATCH'
         });
 
         if (respuesta.ok) {
             // 3. ¡IMPORTANTE! Limpiamos el filtro de pestañas para que no intente 
             // renderizar un pedido que ya no va a existir en 'pendientes'
-            obtenerPedidosDeDB(); 
+            obtenerPedidosDeDB();
             console.log("Pedido cancelado con éxito");
         }
     } catch (error) {
@@ -203,11 +217,11 @@ async function obtenerPedidosDeDB() {
     try {
         const respuesta = await fetch('/api/pedidos/pendientes');
         const pedidosDB = await respuesta.json();
-        
+
         todasLasComandas = pedidosDB.map(p => ({
             id: p._id.slice(-3),
             mongoId: p._id, // IMPORTANTE: Necesitamos el ID real de Mongo para el PATCH
-            mesa: p.mesa || "Barra", 
+            mesa: p.mesa || "Barra",
             articulos: p.items,
             total: p.total,
             estado: p.estado
@@ -218,7 +232,7 @@ async function obtenerPedidosDeDB() {
     }
 }
 
-// Nueva función de COBRAR que avisa al servidor
+//Función de COBRAR que avisa al servidor, hace Ptach a la api
 async function cobrarMesa(idDisplay) {
     const pedido = todasLasComandas.find(p => p.id === idDisplay);
     if (!pedido) return;
@@ -233,12 +247,12 @@ async function cobrarMesa(idDisplay) {
                 // AQUÍ: Eliminamos la tarjeta del DOM inmediatamente
                 const tarjeta = document.querySelector(`[data-order-id="${idDisplay}"]`);
                 if (tarjeta) tarjeta.remove();
-                
+
                 // Quitamos del array para que el refresco automático no la vuelva a pintar
                 todasLasComandas = todasLasComandas.filter(p => p.id !== idDisplay);
 
                 alert("¡Pedido pagado y enviado al historial!");
-                obtenerPedidosDeDB(); 
+                obtenerPedidosDeDB();
             }
         } catch (error) {
             alert("Error al conectar con el servidor");
@@ -259,7 +273,7 @@ async function mostrarHistorial() {
         const respuesta = await fetch('/api/pedidos/historial');
         const historial = await respuesta.json();
         const tbody = document.getElementById('history-body');
-        
+
         tbody.innerHTML = historial.map(pedido => {
             const agrupados = pedido.items.reduce((acc, item) => {
                 const existe = acc.find(a => a.nombre === item.nombre);
@@ -277,7 +291,6 @@ async function mostrarHistorial() {
 
             const fechaFormateada = new Date(pedido.fecha).toLocaleString();
 
-            // --- 🛠️ CAMBIO AQUÍ: LÓGICA DE ESTADO DINÁMICA ---
             // Si el estado es 'Cancelado', usamos la clase 'canceled' (rojo), si no, 'completed' (verde)
             const esCancelado = pedido.estado === 'Cancelado';
             const claseEstado = esCancelado ? 'canceled' : 'completed';
@@ -316,7 +329,7 @@ function mostrarHome() {
     // 1. VOLVEMOS A MOSTRAR LO DEL HOME/BARRA
     const tituloPrincipal = document.getElementById('main-title');
     if (tituloPrincipal) tituloPrincipal.style.display = 'block'; // Mostramos "POS - CONTROL DE CAJA"
-    
+
     const tabs = document.querySelector('.order-tabs');
     if (tabs) tabs.style.display = 'flex'; // Mostramos los botones #c35
 
@@ -331,4 +344,23 @@ function cerrarSesion() {
         localStorage.removeItem('usuarioNombre');
         window.location.href = 'login.html';
     }
+}
+function quitarArticulo(pedidoId, nombreArticulo) {
+    // 1. Buscamos el pedido en nuestro array local
+    const pedido = todasLasComandas.find(p => p.id === pedidoId);
+    if (!pedido) return;
+
+    // 2. Confirmación rápida
+    if (!confirm(`¿Eliminar ${nombreArticulo} de la cuenta?`)) return;
+
+    // 3. Filtramos: quitamos UN artículo con ese nombre
+    const index = pedido.articulos.findIndex(a => a.nombre === nombreArticulo);
+    if (index > -1) {
+        pedido.articulos.splice(index, 1); // Quitamos solo uno
+    }
+
+    // 4. Refrescamos la pantalla para que el TOTAL cambie
+    renderizarPedidos();
+
+    console.log(`Eliminado ${nombreArticulo} del pedido #${pedidoId}`);
 }

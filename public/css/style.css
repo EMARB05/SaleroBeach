@@ -432,6 +432,29 @@ header {
     border-radius: 15px;
 }
 
+
+/* Tarjeta cancelada */
+.order-card.order-canceled {
+    border: 3px solid #ff4757 !important;
+    background-color: rgba(255, 71, 87, 0.05);
+    animation: flash-red 2s infinite; /* Opcional: para que parpadee */
+}
+
+.cancel-badge {
+    background: #ff4757;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+@keyframes flash-red {
+    0% { box-shadow: 0 0 0px #ff4757; }
+    50% { box-shadow: 0 0 15px #ff4757; }
+    100% { box-shadow: 0 0 0px #ff4757; }
+}
+
 /* Clase para la tarjeta cuando está lista */
 .order-card.order-ready {
     border: 2px solid #32DDFB; /* El cian que usamos en tu proyecto */
@@ -448,4 +471,18 @@ header {
     border-radius: 4px;
     margin-left: 10px;
     vertical-align: middle;
+}
+
+.btn-delete-item {
+    background: none;
+    border: none;
+    color: #ff4757;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.btn-delete-item:hover {
+    transform: scale(1.2);
 }
