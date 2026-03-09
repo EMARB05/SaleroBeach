@@ -244,7 +244,7 @@ async function cobrarMesa(idDisplay) {
             });
 
             if (respuesta.ok) {
-                // AQUÍ: Eliminamos la tarjeta del DOM inmediatamente
+                // Eliminamos la tarjeta del DOM inmediatamente
                 const tarjeta = document.querySelector(`[data-order-id="${idDisplay}"]`);
                 if (tarjeta) tarjeta.remove();
 
@@ -345,22 +345,20 @@ function cerrarSesion() {
         window.location.href = 'login.html';
     }
 }
-function quitarArticulo(pedidoId, nombreArticulo) {
-    // 1. Buscamos el pedido en nuestro array local
-    const pedido = todasLasComandas.find(p => p.id === pedidoId);
-    if (!pedido) return;
+async function quitarArticulo(mongoId, nombreArticulo) {
+    if (!confirm(`¿Seguro que quieres quitar "${nombreArticulo}"?`)) return;
 
-    // 2. Confirmación rápida
-    if (!confirm(`¿Eliminar ${nombreArticulo} de la cuenta?`)) return;
+    try {
+        const respuesta = await fetch(`/api/pedidos/${mongoId}/quitar-item`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' }, // Decimos que enviamos JSON
+            body: JSON.stringify({ nombre: nombreArticulo }) // Enviamos el nombre
+        });
 
-    // 3. Filtramos: quitamos UN artículo con ese nombre
-    const index = pedido.articulos.findIndex(a => a.nombre === nombreArticulo);
-    if (index > -1) {
-        pedido.articulos.splice(index, 1); // Quitamos solo uno
+        if (respuesta.ok) {
+            obtenerPedidosDeDB(); // Recargamos la lista para que desaparezca visualmente
+        }
+    } catch (error) {
+        console.error("Error:", error);
     }
-
-    // 4. Refrescamos la pantalla para que el TOTAL cambie
-    renderizarPedidos();
-
-    console.log(`Eliminado ${nombreArticulo} del pedido #${pedidoId}`);
 }

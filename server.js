@@ -170,7 +170,33 @@ app.patch('/api/pedidos/:id/completar', async (req, res) => {
     }
 });
 
+
+// NUEVA RUTA: Para quitar un artículo específico de un pedido
+app.patch('/api/pedidos/:id/quitar-item', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre } = req.body;
+
+        // Usamos $pull de MongoDB para eliminar el primer artículo que coincida con ese nombre
+        // Esto evita que si hay 2 tortillas, se borren las 2 a la vez si no quieres
+        const pedidoActualizado = await Pedido.findByIdAndUpdate(
+            id,
+            { $pull: { items: { nombre: nombre } } }, 
+            { new: true } // Para que devuelva el pedido ya modificado
+        );
+
+        if (pedidoActualizado) {
+            res.json({ mensaje: "Artículo eliminado", pedido: pedidoActualizado });
+        } else {
+            res.status(404).send("Pedido no encontrado");
+        }
+    } catch (error) {
+        console.error("Error al quitar item:", error);
+        res.status(500).send("Error interno al quitar el artículo");
+    }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Salero Bar funcionando en http://localhost:${PORT}`);
+    console.log(`Salero Bar funcionando en http://localhost:${PORT}`);
 });
