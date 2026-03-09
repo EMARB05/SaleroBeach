@@ -74,11 +74,18 @@ app.get('/api/productos', async (req, res) => {
 
 // 1. Esquema para los Pedidos (Orders)
 const pedidoSchema = new mongoose.Schema({
-    items: Array,        // Aquí guardaremos la lista de productos del carrito
-    total: Number,       // El precio total del pedido
+    // Definimos la estructura interna de cada item para que tengan su propio ID
+    items: [{
+        nombre: String,
+        precio: Number,
+        sub: String, // Para filtrar 'food' en cocina
+        nota: String,
+        cantidad: { type: Number, default: 1 }
+    }],
+    total: Number,
     mesa: String,
-    fecha: { type: Date, default: Date.now }, // Para saber cuándo se hizo el pedido
-    estado: { type: String, default: 'Pendiente' } // Para que el camarero sepa si está listo
+    fecha: { type: Date, default: Date.now },
+    estado: { type: String, default: 'Pendiente' }
 });
 
 const Pedido = mongoose.model('Pedido', pedidoSchema, 'pedidos');
@@ -171,34 +178,41 @@ app.patch('/api/pedidos/:id/completar', async (req, res) => {
 });
 
 
-// NUEVA RUTA: Para quitar un artículo específico de un pedido
+// NUEVA RUTA Para quitar un artículo específico de un pedido
 app.patch('/api/pedidos/:id/quitar-item', async (req, res) => {
     try {
         const { id } = req.params;
         const { nombre } = req.body;
 
-        //Buscamos el pedido primero
         const pedido = await Pedido.findById(id);
         if (!pedido) return res.status(404).send("Pedido no encontrado");
 
-        // Encontramos el índice de la PRIMERA coincidencia del artículo
+        // Buscamos el ítem por nombre
         const index = pedido.items.findIndex(item => item.nombre === nombre);
 
         if (index > -1) {
-            //  Eliminamos solo ese elemento del array
-            pedido.items.splice(index, 1);
+            const itemEncontrado = pedido.items[index];
+
+            if (itemEncontrado.cantidad > 1) {
+                // Si hay más de uno, solo restamos 1 a la cantidad
+                itemEncontrado.cantidad -= 1;
+            } else {
+                // Si solo queda uno, eliminamos el objeto del array
+                pedido.items.splice(index, 1);
+            }
             
-            // Recalculamos el total con lo que queda
-            pedido.total = pedido.items.reduce((acc, item) => acc + (item.precio || 0), 0);
+            // Recalculamos el total: (precio * cantidad) de cada ítem restante
+            pedido.total = pedido.items.reduce((acc, item) => {
+                return acc + ((item.precio || 0) * (item.cantidad || 1));
+            }, 0);
             
-            //Guardamos los cambios en MongoDB
             await pedido.save();
-            res.json({ mensaje: "Un artículo eliminado", pedido });
+            res.json({ mensaje: "Cantidad actualizada", pedido });
         } else {
             res.status(404).send("El artículo ya no está en el pedido");
         }
     } catch (error) {
-        console.error("Error al quitar item uno a uno:", error);
+        console.error("Error al quitar item:", error);
         res.status(500).send("Error interno");
     }
 });

@@ -42,8 +42,8 @@ function renderizarPedidosCocina(filtroId = null) {
                 
                 <div class="product-list">
                     ${soloComida.map(item => {
-                        // Revisamos si este plato específico está marcado como hecho en el navegador
-                        const llave = `check-${pedido.id}-${item.nombre}`;
+                        // REVISIÓN: Aseguramos que la llave use el _id único
+                        const llave = `check-${pedido.mongoId}-${item._id}`; 
                         const estaHecho = localStorage.getItem(llave) === 'true';
 
                         return `
@@ -57,8 +57,7 @@ function renderizarPedidosCocina(filtroId = null) {
                             <span class="qty">x${item.cantidad || 1}</span>
                             
                             <button class="btn-check-visual" 
-                                    style="background: none; border: 1px solid #ccc; cursor: pointer; font-size: 1.2rem; margin-left: 10px; border-radius: 4px;"
-                                    onclick="marcarVisual(this, '${pedido.id}', '${item.nombre}')">
+                                    onclick="marcarVisual(this, '${pedido.mongoId}', '${item._id}')">
                                 ${estaHecho ? '✅' : '⬜'}
                             </button>
                         </div>
@@ -106,42 +105,35 @@ function mostrarSeccion(nombreSeccion) {
     });
 }
 async function completarPedido(idCorto) {
+    // 1. Buscamos el pedido para obtener el mongoId antes de borrar nada
+    const pedido = todasLasComandas.find(p => p.id === idCorto);
+    if (!pedido) return;
+
+    // 2. Limpieza de localStorage usando el mongoId para ser precisos
     Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(`check-${idCorto}`)) {
+        if (key.startsWith(`check-${pedido.mongoId}`)) {
             localStorage.removeItem(key);
         }
     });
-    // Buscamos el pedido en nuestro array local para sacar el mongoId
-    const pedido = todasLasComandas.find(p => p.id === idCorto);
-    
-    if (!pedido) {
-        console.error("No se encontró el pedido para completar");
-        return;
-    }
 
     try {
-        // 2. Avisamos al servidor para que cambie el estado a 'Listo'
         const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/completar`, {
             method: 'PATCH'
         });
 
         if (respuesta.ok) {
-            // 3. Si el servidor dice OK, hacemos la animación de salida
             const tarjeta = document.querySelector(`[data-order-id="${idCorto}"]`);
             if (tarjeta) {
                 tarjeta.classList.add('order-finished');
-                // Ponemos el botón en naranja de "COMPLETADO"
                 const btnCont = tarjeta.querySelector('.card-buttons');
                 if (btnCont) {
                     btnCont.innerHTML = `<button class="btn-completed">✔ COMPLETADO</button>`;
                 }
 
-                // Esperamos un poco y lo quitamos de la vista
                 setTimeout(() => {
                     tarjeta.style.opacity = "0";
                     setTimeout(() => {
                         tarjeta.remove();
-                        // Filtramos el array local para que desaparezca del todo
                         todasLasComandas = todasLasComandas.filter(p => p.id !== idCorto);
                     }, 300);
                 }, 1000);
@@ -149,7 +141,6 @@ async function completarPedido(idCorto) {
         }
     } catch (error) {
         console.error("Error al completar el pedido:", error);
-        alert("No se pudo conectar con el servidor para marcar como listo");
     }
 }
 async function obtenerPedidosCocina() {
@@ -251,21 +242,27 @@ async function cargarHistorialCocina() {
     }
 }
 
-function marcarVisual(boton, pedidoId, nombreArticulo) {
-    const llave = `check-${pedidoId}-${nombreArticulo}`;
+// El tercer parámetro ahora es itemId (el _id único de Mongo para ese plato)
+function marcarVisual(boton, mongoPedidoId, itemId) {
+    // Usamos el ID del pedido Y el ID único del ítem para que no haya colisiones
+    const llave = `check-${mongoPedidoId}-${itemId}`;
     const estaMarcadoActualmente = localStorage.getItem(llave) === 'true';
 
-    // Cambiamos el estado en el almacenamiento del navegador
+    // Cambiamos el estado en el Local Storage
     if (estaMarcadoActualmente) {
         localStorage.removeItem(llave);
     } else {
         localStorage.setItem(llave, 'true');
     }
 
-    // Volvemos a pintar la pantalla inmediatamente para que se vea el cambio
-    renderizarPedidosCocina();
+    // Volvemos a pintar para aplicar el cambio visual
+    // Asegúrate de que tu vista de cocina usa renderizarPedidosCocina
+    if (typeof renderizarPedidosCocina === 'function') {
+        renderizarPedidosCocina();
+    } else if (typeof renderizarPedidos === 'function') {
+        renderizarPedidos();
+    }
 }
-
 
 window.onload = obtenerPedidosCocina;
 setInterval(obtenerPedidosCocina, 15000);
