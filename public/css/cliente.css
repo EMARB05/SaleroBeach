@@ -519,7 +519,7 @@ body {
 /* Media Query para Tablets y pantallas medianas */
 @media (min-width: 600px) {
     .mobile-container {
-        max-width: 800px; /* Ampliamos el ancho en tablets */
+        max-width: 800px; 
     }
 
     .icon-cart-container {

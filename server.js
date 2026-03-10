@@ -104,8 +104,6 @@ app.post('/api/pedidos', async (req, res) => {
     }
 });
 
-
-// server.js - Línea 110 aprox.
 app.get('/api/pedidos/pendientes', async (req, res) => {
     try {
         const pedidos = await Pedido.find({ 
