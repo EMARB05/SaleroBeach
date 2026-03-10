@@ -339,17 +339,24 @@ function actualizarMenuActivo(idBoton) {
 
 function mostrarHome() {
     actualizarMenuActivo('btn-home');
+    
     // 1. VOLVEMOS A MOSTRAR LO DEL HOME/BARRA
     const tituloPrincipal = document.getElementById('main-title');
-    if (tituloPrincipal) tituloPrincipal.style.display = 'block'; // Mostramos "POS - CONTROL DE CAJA"
+    if (tituloPrincipal) tituloPrincipal.style.display = 'block'; 
 
     const tabs = document.querySelector('.order-tabs');
-    if (tabs) tabs.style.display = 'flex'; // Mostramos los botones #c35
+    if (tabs) tabs.style.display = 'flex'; 
 
     const cards = document.querySelector('.cards-container');
-    if (cards) cards.style.display = 'flex'; // Mostramos las tarjetas
+    if (cards) cards.style.display = 'flex'; 
+
+    // OCULTAMOS LAS OTRAS VISTAS (Historial y Productos)
     document.getElementById('history-view').style.display = 'none';
-    document.querySelector('.cards-container').style.display = 'flex';
+    
+    // ESTA LÍNEA PARA LIMPIAR LA PANTALLA DE PRODUCTOS
+    const vistaProductos = document.getElementById('products-view');
+    if (vistaProductos) vistaProductos.style.display = 'none';
+
     obtenerPedidosDeDB();
 }
 function cerrarSesion() {
@@ -373,5 +380,54 @@ async function quitarArticulo(mongoId, nombreArticulo) {
         }
     } catch (error) {
         console.error("Error:", error);
+    }
+}
+async function mostrarGestionProductos() {
+    actualizarMenuActivo('btn-barra'); // Para que se quede naranja el botón PRODUCTS
+    
+    // 1. Ocultamos todo lo demás
+    document.getElementById('main-title').style.display = 'none';
+    document.querySelector('.order-tabs').style.display = 'none';
+    document.querySelector('.cards-container').style.display = 'none';
+    document.getElementById('history-view').style.display = 'none';
+    
+    // 2. Mostramos la vista de productos
+    const viewProducts = document.getElementById('products-view');
+    viewProducts.style.display = 'block';
+
+    try {
+        const respuesta = await fetch('/api/productos');
+        const productos = await respuesta.json();
+        const contenedor = document.getElementById('products-admin-list');
+
+        contenedor.innerHTML = productos.map(prod => `
+            <div class="product-stock-card">
+                <img src="${prod.imagen}" alt="${prod.nombre}">
+                <div class="product-stock-info">
+                    <h4>${prod.nombre}</h4>
+                    <span>${prod.precio.toFixed(2)}€</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" ${prod.disponible !== false ? 'checked' : ''} 
+                           onchange="actualizarDisponibilidad('${prod._id}', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error("Error al cargar productos:", error);
+    }
+}
+
+// Función para avisar al servidor del cambio
+async function actualizarDisponibilidad(id, estado) {
+    try {
+        await fetch(`/api/productos/${id}/disponibilidad`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ disponible: estado })
+        });
+    } catch (error) {
+        alert("Error al actualizar el stock");
     }
 }

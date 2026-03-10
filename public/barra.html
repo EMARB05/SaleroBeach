@@ -15,10 +15,10 @@
             <div class="logo">S</div>
             <nav>
                 <ul>
-                    <li onclick="mostrarHome()" id="btn-home"><i
-                                class="fas fa-utensils"></i> HOME</li>
+                    <li class="active" onclick="mostrarHome()" id="btn-home"><i class="fas fa-utensils"></i> HOME</li>
                     <li onclick="mostrarHistorial()" id="btn-history"><i class="fas fa-history"></i> HISTORY</li>
-                    <li class="active" onclick="mostrarPedidosActivos()" id="btn-barra"><i class="fas fa-glass-martini-alt"></i>PRODUCTS</li>
+                    <li onclick="mostrarGestionProductos()" id="btn-barra"><i
+                            class="fas fa-glass-martini-alt"></i>PRODUCTS</li>
                 </ul>
             </nav>
             <div class="status-container">
@@ -32,10 +32,11 @@
                 <div class="header-top">
                     <h1 id="main-title">POS - CONTROL DE CAJA</h1>
                     <div class="user-profile">
-                       <div class="user-info" onclick="cerrarSesion()" style="cursor: pointer;">
-    <span class="user-avatar">B</span> 
-    <span class="user-name">Staff_Barra</span>
-    <i class="fas fa-sign-out-alt"></i> </div>
+                        <div class="user-info" onclick="cerrarSesion()" style="cursor: pointer;">
+                            <span class="user-avatar">B</span>
+                            <span class="user-name">Staff_Barra</span>
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
                         <i class="fas fa-bell notification-icon"></i>
                     </div>
                 </div>
@@ -61,6 +62,15 @@
                     </thead>
                     <tbody id="history-body"></tbody>
                 </table>
+            </div>
+
+            <div id="products-view" style="display: none;">
+                <div class="products-header">
+                    <h2>GESTIÓN DE PRODUCTOS (STOCK)</h2>
+                    <p>Desactiva los productos que se hayan agotado</p>
+                </div>
+                <div class="products-admin-grid" id="products-admin-list">
+                </div>
             </div>
         </main>
     </div>
