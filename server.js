@@ -57,7 +57,8 @@ const productoSchema = new mongoose.Schema({
     precio: Number,
     categoria: String,
     sub: String,
-    imagen: String
+    imagen: String,
+    disponible: { type: Boolean, default: true }
 });
 const Producto = mongoose.model('Producto', productoSchema, 'productos');
 
@@ -214,7 +215,30 @@ app.patch('/api/pedidos/:id/quitar-item', async (req, res) => {
         res.status(500).send("Error interno");
     }
 });
-const PORT = 3000;
+// Ruta para la APP del CLIENTE (Solo muestra lo disponible)
+app.get('/api/productos/cliente', async (req, res) => {
+    try {
+        // Buscamos productos que NO tengan disponible: false
+        const productos = await Producto.find({ disponible: { $ne: false } });
+        res.json(productos);
+    } catch (error) {
+        res.status(500).send("Error al obtener productos");
+    }
+});
+
+// RUTA para cambiar disponibilidad desde la Barra
+app.patch('/api/productos/:id/disponibilidad', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { disponible } = req.body;
+        await Producto.findByIdAndUpdate(id, { disponible });
+        res.send("Disponibilidad actualizada con éxito");
+    } catch (error) {
+        res.status(500).send("Error al actualizar disponibilidad");
+    }
+});
+const PORT = process.env.PORT || 3000; // Usa el puerto de Render o el 3000 localmente
+
 app.listen(PORT, () => {
-    console.log(`Salero Bar funcionando en http://localhost:${PORT}`);
+    console.log(`Salero Bar funcionando en el puerto: ${PORT}`);
 });

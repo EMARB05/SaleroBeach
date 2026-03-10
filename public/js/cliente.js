@@ -16,7 +16,7 @@ let carrito = [];
 async function obtenerProductos() {
     try {
         // Llamamos a la API que creamos en server.js
-        const respuesta = await fetch('/api/productos');
+        const respuesta = await fetch('/api/productos/cliente');
         productos = await respuesta.json();
 
         console.log("✅ Datos cargados desde MongoDB:", productos);
