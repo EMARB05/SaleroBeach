@@ -7,6 +7,21 @@
     }
 })();
 
+// Al cargar la página, ponemos el nombre real del usuario
+document.addEventListener('DOMContentLoaded', () => {
+    const nombreReal = localStorage.getItem('usuarioNombre');
+    if (nombreReal) {
+        document.getElementById('nombre-chef').innerText = nombreReal;
+    }
+});
+
+function cerrarSesion() {
+    if (confirm("¿Cerrar sesión en Cocina?")) {
+        localStorage.removeItem('usuarioNombre');
+        window.location.href = 'login.html';
+    }
+}
+
 let todasLasComandas = [];
 
 // 1. Función para calcular cuánto hace que llegó el pedido

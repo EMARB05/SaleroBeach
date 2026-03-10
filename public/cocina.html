@@ -22,6 +22,9 @@
                         <i class="fas fa-history"></i> HISTORY
                     </li>
                     <li><i class="fas fa-box"></i> PRODUCTOS</li>
+                    <li onclick="cerrarSesion()" style="margin-top: auto; color: #ff4757;">
+                        <i class="fas fa-sign-out-alt"></i> SALIR
+                    </li>
                 </ul>
             </nav>
             <div class="status-container">
@@ -36,15 +39,15 @@
                     <h1 id="main-title">LISTA DE PEDIDOS</h1>
                     <div class="user-profile">
                         <div class="user-info">
-                            <span class="user-avatar">C</span> 
-                            <span class="user-name">Chef_Salero</span>
+                            <span class="user-avatar">C</span>
+                            <span class="user-name" id="nombre-chef">Cargando...</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <i class="fas fa-bell notification-icon"></i>
                     </div>
                 </div>
 
-               
+
             </header>
 
             <section id="seccion-pedidos" class="cards-container">
@@ -63,7 +66,7 @@
                             <span class="qty">x2</span>
                         </div>
                     </div>
-                    
+
                     <div class="total-items">
                         <hr class="separator">
                         <div class="info-footer">
@@ -90,7 +93,7 @@
                         </tr>
                     </thead>
                     <tbody id="history-body-cocina">
-                        </tbody>
+                    </tbody>
                 </table>
             </section>
 
