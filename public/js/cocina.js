@@ -1,3 +1,12 @@
+// --- PROTECCIÓN DE SESIÓN ---
+(function comprobarSesionCocina() {
+    const usuario = localStorage.getItem('usuarioNombre');
+    if (!usuario) {
+        // Si no hay sesión, al login
+        window.location.href = 'login.html';
+    }
+})();
+
 let todasLasComandas = [];
 
 // 1. Función para calcular cuánto hace que llegó el pedido
@@ -265,4 +274,4 @@ function marcarVisual(boton, mongoPedidoId, itemId) {
 }
 
 window.onload = obtenerPedidosCocina;
-setInterval(obtenerPedidosCocina, 15000);
+setInterval(obtenerPedidosCocina,5000);

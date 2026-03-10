@@ -12,8 +12,8 @@ let todasLasComandas = [];
 // 2. Único punto de entrada
 window.onload = () => {
     obtenerPedidosDeDB();
-    // Actualizar automáticamente cada 15 segundos para ver pedidos nuevos
-    setInterval(obtenerPedidosDeDB, 15000);
+    // Actualizar automáticamente cada 5 segundos para ver pedidos nuevos
+    setInterval(obtenerPedidosDeDB, 5000);
 };
 // 3. Función principal de dibujo (Maneja Cocina y Barra)
 function renderizarPedidos(filtroId = null) {
