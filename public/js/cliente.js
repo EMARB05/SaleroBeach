@@ -66,20 +66,22 @@ function cargarMenu() {
 
 
 function actualizarInterfazCarrito() {
-    // Buscamos el badge del nuevo icono SVG
-    const badge = document.getElementById('cart-count');
-    if (badge) {
-        badge.innerText = carrito.length;
-        // Si el carrito está vacío, ocultamos la burbuja roja para que quede más limpio
-        badge.style.display = carrito.length > 0 ? 'flex' : 'none';
+    const totalItems = carrito.length; 
+
+    // 1. Actualiza el badge de la campana principal (ID cart-count)
+    const badgePrincipal = document.getElementById('cart-count');
+    if (badgePrincipal) {
+        badgePrincipal.innerText = totalItems;
+        badgePrincipal.style.display = totalItems > 0 ? 'flex' : 'none';
     }
 
-    // Actualizamos también cualquier otro icono de carrito (como el de la vista detallada)
-    const otrosIconos = document.querySelectorAll('.icon-cart');
-    otrosIconos.forEach(icono => {
-        // Mantenemos el formato anterior para compatibilidad con el HTML viejo si existe
-        icono.innerHTML = `🛒 <span>${carrito.length}</span>`;
-    });
+    // 2. Actualiza el número en la vista detallada (ID cart-count-detalle)
+    const badgeDetalle = document.getElementById('cart-count-detalle');
+    if (badgeDetalle) {
+        badgeDetalle.innerText = totalItems;
+        // Si quieres que el número de la vista detalle también se oculte al ser 0:
+        // badgeDetalle.parentElement.style.opacity = totalItems > 0 ? '1' : '0.5';
+    }
 }
 // 2. Corregimos la función de agregar para que coincida con los nuevos IDs
 
@@ -254,7 +256,7 @@ async function enviarABarra() {
         });
 
         if (respuesta.ok) {
-            alert(`¡Pedido enviado a barra! (Mesa ${mesaActual}) 🍻`);
+            alert(`¡Pedido enviado a barra! (Mesa ${mesaActual})`);
 
             // LIMPIEZA TRAS ÉXITO
             carrito = [];

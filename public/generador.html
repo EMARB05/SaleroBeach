@@ -6,14 +6,18 @@
     <style>
         body { font-family: sans-serif; text-align: center; background: #1a1c23; color: white; }
         .qr-card { background: white; padding: 20px; display: inline-block; margin: 10px; border-radius: 10px; color: black; }
+        button{padding: 10px; background: #d35400; color: white; border: none;}
+        input{padding: 10px;}
+        #contenedor-qr{margin-top: 30px;}
+
     </style>
 </head>
 <body>
     <h1>Generador de Mesas - Salero Bar</h1>
-    <input type="number" id="numMesa" placeholder="Nº de Mesa" style="padding: 10px;">
-    <button onclick="generarQR()" style="padding: 10px; background: #d35400; color: white; border: none;">Generar QR</button>
+    <input type="number" id="numMesa" placeholder="Nº de Mesa">
+    <button onclick="generarQR()">Generar QR</button>
     
-    <div id="contenedor-qr" style="margin-top: 30px;"></div>
+    <div id="contenedor-qr"></div>
 
     <script>
         function generarQR() {
@@ -26,8 +30,7 @@
             div.innerHTML = `<h3>MESA ${mesa}</h3><div id="canvas-${mesa}"></div>`;
             contenedor.appendChild(div);
 
-            // IMPORTANTE: Aquí creamos la URL con el parámetro ?mesa=X
-            // Usa tu IP local (ej: 192.168.1.XX) si quieres escanear con el móvil real
+            // Aquí creamos la URL con el parámetro ?mesa=X
             const urlMesa = `http://localhost:3000/index.html?mesa=${mesa}`;
             
             new QRCode(document.getElementById(`canvas-${mesa}`), {

@@ -102,7 +102,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #1e1e1e /* Contorno blanco para que resalte */
+    /* Contorno blanco para que resalte */
 }
 
 /* Buscador */
@@ -270,7 +270,7 @@ body {
 }
 
 .btn-confirmar {
-    background: #ff7300; /* Naranja Salero */
+    background: linear-gradient(45deg, #FFA113, #F4350A); 
     color: white;
     width: 100%;
     padding: 15px;
@@ -296,7 +296,7 @@ body {
 .controles-cantidad button {
     background: transparent;
     border: none;
-    color: #ff7300; /* Naranja Salero */
+    color: #ff7300; 
     font-size: 1.2rem;
     font-weight: bold;
     cursor: pointer;
@@ -348,7 +348,7 @@ body {
 .btn-volver {
     background: none;
     border: none;
-    color: white;
+    color: #f1c40f;
     font-size: 1.8rem;
     cursor: pointer;
 }
@@ -389,7 +389,7 @@ body {
 }
 
 .item-lista-pro button {
-    background: #ff7300; /* Naranja Salero */
+    background: linear-gradient(45deg, #FFA113, #F4350A); 
     border: none;
     color: white;
     padding: 8px 12px;
@@ -483,7 +483,7 @@ body {
 }
 
 .input-nota:focus {
-    border-color: #ff7300; /* Naranja Salero para resaltar cuando escriben */
+    border-color: #ff7300; /* Naranja para resaltar cuando escriben */
 }
 
 /* El contenedor principal del modal */
@@ -508,8 +508,20 @@ body {
     margin-top: 10px;
 }
 
-/* Para que el input de nota no se pegue a los bordes en móviles */
+
 @media (max-width: 480px) {
+
+    .hero-section {
+        height: 25vh; 
+        padding: 15px;
+        min-height: 140px;
+        max-height: 250px;
+    }
+
+    .btn-back, .icon-cart {
+        font-size: 22px; 
+        padding: 8px;
+    }
     .order-card {
         width: 90%; /* Se adapta mejor al ancho del iPhone */
         margin: 0 auto;

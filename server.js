@@ -73,7 +73,7 @@ app.get('/api/productos', async (req, res) => {
 });
 
 
-// 1. Esquema para los Pedidos (Orders)
+// Esquema para los Pedidos (Orders)
 const pedidoSchema = new mongoose.Schema({
     // Definimos la estructura interna de cada item para que tengan su propio ID
     items: [{
@@ -93,12 +93,12 @@ const pedidoSchema = new mongoose.Schema({
 const Pedido = mongoose.model('Pedido', pedidoSchema, 'pedidos');
 
 
-// 2. RUTA POST: Para recibir el pedido del cliente y guardarlo en la DB
+//RUTA POST: Para recibir el pedido del cliente y guardarlo en la DB
 app.post('/api/pedidos', async (req, res) => {
     try {
         const nuevoPedido = new Pedido(req.body); // Recibe { items, total }
         await nuevoPedido.save();
-        res.status(201).json({ mensaje: "✅ Pedido guardado con éxito", id: nuevoPedido._id });
+        res.status(201).json({ mensaje: "Pedido guardado con éxito", id: nuevoPedido._id });
     } catch (error) {
         console.error("Error al guardar pedido:", error);
         res.status(500).send("Error al procesar el pedido");

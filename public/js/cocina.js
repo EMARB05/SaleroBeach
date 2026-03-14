@@ -117,7 +117,7 @@ function mostrarSeccion(nombreSeccion) {
     } else {
         pedidos.style.display = 'none';
         historial.style.display = 'block';
-        cargarHistorialCocina(); //
+        cargarHistorialCocina();
     }
 
     // Lógica del brillo de los botones (el resto igual...)
@@ -173,7 +173,7 @@ async function obtenerPedidosCocina() {
         const respuesta = await fetch('/api/pedidos/pendientes'); 
         const datos = await respuesta.json();
         
-        // 2. FILTRO CLAVE: El cocinero solo quiere ver lo que falta por hacer
+        // 2. FILTROOO ,El cocinero solo quiere ver lo que falta por hacer
         const soloParaCocina = datos.filter(p => p.estado === 'Pendiente');
 
         // 3. Mapeamos solo esos pedidos pendientes
@@ -279,8 +279,6 @@ function marcarVisual(boton, mongoPedidoId, itemId) {
         localStorage.setItem(llave, 'true');
     }
 
-    // Volvemos a pintar para aplicar el cambio visual
-    // Asegúrate de que tu vista de cocina usa renderizarPedidosCocina
     if (typeof renderizarPedidosCocina === 'function') {
         renderizarPedidosCocina();
     } else if (typeof renderizarPedidos === 'function') {
