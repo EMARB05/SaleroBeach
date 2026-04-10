@@ -407,9 +407,10 @@ app.patch('/api/pedidos/:id/asignar', async (req, res) => {
 
 // --- INICIO DEL SERVIDOR ---
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(` Salero Bar funcionando en el puerto: ${PORT}`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Salero Bar funcionando en el puerto: ${PORT}`);
 });
-// La doc sugiere aumentar estos valores para evitar "Connection reset"
+
+
 server.keepAliveTimeout = 120000;
 server.headersTimeout = 125000;
