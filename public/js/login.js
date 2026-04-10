@@ -1,11 +1,3 @@
-
-// Este código debe ejecutarse nada más cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    const nombre = localStorage.getItem('usuarioNombre');
-    if (nombre) {
-        document.querySelector('.user-name').innerText = nombre;
-    }
-});
 async function manejarLogin() {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
@@ -22,9 +14,20 @@ async function manejarLogin() {
         const resultado = await respuesta.json();
 
         if (resultado.success) {
-            // Guardamos el nombre para que aparezca en el header
+            //Guardamos los datos clave
             localStorage.setItem('usuarioNombre', resultado.nombre);
-            window.location.href = 'barra.html'; 
+            localStorage.setItem('usuarioRol', resultado.rol); //Guardo si es barra o camarero
+
+            // Redirección basada en el ROL que viene de la BD
+            if (resultado.rol === 'barra') {
+                window.location.href = 'barra.html';
+            } else if(resultado.rol==='camarero') {
+                // Si es camarero (o cualquier otro rol por defecto)
+                window.location.href = 'camarero.html';
+            }
+            else if(resultado.rol=='cocinero'){
+                window.location.href='cocina.html'
+            }
         } else {
             alert("❌ " + resultado.mensaje);
         }

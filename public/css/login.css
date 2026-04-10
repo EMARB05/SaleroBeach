@@ -1,5 +1,5 @@
 .login-page {
-    background-color: #1a1c23; /* Fondo oscuro */
+    background-color: #1a1c23; 
     background-image: radial-gradient(circle at left, #d3540033, transparent 40%),
                       radial-gradient(circle at right, #e67e2233, transparent 40%);
     display: flex;
@@ -23,7 +23,7 @@
 }
 
 .logo-s img {
-    width: 130px;       /* Ajusta este valor según te guste de grande */
+    width: 130px;      
     height: auto;        /* Mantiene la proporción para que no se vea estirado */
     object-fit: contain; /* Asegura que la imagen quepa bien en el espacio */
 }
@@ -37,7 +37,9 @@
     border: 1px solid #444;
 }
 
-.input-group label { color: #d35400; font-size: 12px; display: block; }
+
+
+.input-group label { color: #FE9315; font-size: 12px; display: block; }
 
 .input-group input {
     background: transparent;
@@ -48,12 +50,16 @@
     padding-top: 5px;
 }
 
+.input-group:focus-within{
+     border-color: #ff7300;
+}
+
 .btn-signin {
     width: 100%;
     padding: 15px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(to right, #f39c12, #d35400); /* Tu naranja degradado */
+    background: linear-gradient(to right, #f39c12, #d35400); 
     color: white;
     font-weight: bold;
     cursor: pointer;
@@ -66,4 +72,55 @@
     line-height: 1.4;    /* Espaciado entre líneas */
     margin-bottom: 30px; /* Separación con los inputs */
     padding: 0 20px;     /* Para que no toque los bordes */
+}
+/*ADAPTACIÓN PARA MÓVILES */
+
+@media (max-width: 480px) {
+
+    .login-container {
+        width: 92%;
+        max-width: 400px;
+        padding: 10px;
+    }
+
+    /* Mensaje */
+    .login-msg {
+        font-size: 1.1rem;
+        color: #ccc;
+        margin-bottom: 25px;
+        padding: 0 10px;
+    }
+
+    /* Grupo input */
+    .input-group {
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        border-radius: 10px;
+    }
+
+    /* Labels */
+    .input-group label {
+        font-size: 14px;
+        letter-spacing: 0.3px;
+    }
+
+    /* Inputs */
+    .input-group input {
+        font-size: 18px;
+        padding-top: 6px;
+    }
+
+    /* Botón */
+    .btn-signin {
+        padding: 16px;
+        font-size: 18px;
+        border-radius: 12px;
+        margin-top: 18px;
+        min-height: 50px;
+    }
+
+    /* Logo */
+    .logo-s img {
+        width: 110px;
+    }
 }

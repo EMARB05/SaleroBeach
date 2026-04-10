@@ -66,7 +66,7 @@ color: aliceblue;
 }
 
 .tab.active {
-    background: linear-gradient(135deg, #FF7E5F, #FEB47B); /* El degradado de tu Figma */
+    background: linear-gradient(135deg, #FF7E5F, #FEB47B); 
     color: white;
 }
 
@@ -95,7 +95,7 @@ color: aliceblue;
 }
 
 .alert-icon {
-    background-color: #EA7C69; /* Naranja de alerta */
+    background-color: #FF4D4D; 
     color: white;
     width: 30px;
     height: 30px;
@@ -123,12 +123,12 @@ color: aliceblue;
 
 .details h3 {
     margin: 0;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .note {
-    color: #FFB572; /* Color para las notas como "Celiaco" */
-    font-size: 11px;
+    color: #FFA113; /* Color para las notas como "Celiaco" */
+    font-size: 13px;
     margin: 5px 0;
 }
 
@@ -139,8 +139,12 @@ color: aliceblue;
     margin-top: 20px;
 }
 
+p.total-amount{
+    font-weight: 600;
+}
+
 .btn-check {
-    background: linear-gradient(135deg, #FF7E5F, #FEB47B); /* Tu gradiente naranja */
+    background: linear-gradient(135deg, #FF7E5F, #FEB47B);
     border: none;
     outline: none;
     padding: 10px;
@@ -162,7 +166,7 @@ color: aliceblue;
     cursor: pointer;
 }
 .btn-cancel {
-    background-color: #EA7C69; /* El color rojizo de tu alerta */
+    background-color: #FF4D4D; 
     border: none;
     outline: none;
     padding: 10px 15px;
@@ -178,43 +182,66 @@ color: aliceblue;
 }
 
 
-/* 2. La lista del menú (Alineada a la izquierda) */
+/*La lista del menú (Alineada a la izquierda) */
 .sidebar nav ul {
-    
     list-style: none;
     padding: 0;
     margin: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espacio entre cada botón */
+    gap: 10px; 
     
 }
 
-/* 3. Cada botón del menú (Apagado) */
+/*Cada botón del menú (Apagado) */
 .sidebar nav ul li {
+    position: relative;
     display: flex;
     align-items: center;
     padding: 16px 20px;
     cursor: pointer;
     border-radius: 12px;
     transition: 0.3s;
-    color: #ABBBC2; /* Gris apagado para el texto */
+    color: #ABBBC2;
     font-weight: 600;
 }
 
-/* 4. El icono (Apagado por defecto) */
+/* El icono (Apagado por defecto) */
 .sidebar nav ul li i {
     margin-right: 15px; 
     font-size: 20px;
-    color: #8898AA; /* Icono gris cuando no está activo */
+    color: #8898AA;
 }
 
-/* 5. CUANDO ESTÁ ACTIVO (La magia) */
+/* CUANDO ESTÁ ACTIVO */
 .sidebar nav ul li.active {
-    background-color: rgba(234, 124, 105, 0.1); 
-    color: #ee7220; /* Color naranja sólido para el texto */
-    border: 1px solid #EA7C69; 
+ 
+    background: linear-gradient(#1f1d2b, #1f1d2b) padding-box, 
+                linear-gradient(45deg, #ff5e00, #ff8c00) border-box;
+    
+    
+    color: #ee7220;
+    
+    /* 3. Un borde transparente que es donde se pintará el degradado */
+    border: 2px solid transparent;
+    border-radius: 12px;
+    
+    /* 5. Aseguramos que el icono también cambie */
+    font-weight: 600;
+}
+    
+
+.sidebar nav ul li.active::before {
+   content: "";
+    position: absolute;
+    top: -2px; 
+    left: -2px;
+    right: -2px;
+    bottom: -2px;  
+    z-index: -1; 
+    background: linear-gradient(45deg, #ff8c00, #ff5e00 );
+    border-radius: 14px;
 }
 
 /* Icono naranja solo cuando el padre es .active */
@@ -274,7 +301,7 @@ color: aliceblue;
 .status-dot {
     width: 8px;
     height: 8px;
-    background-color: #50D1AA; /* El verde de tu diseño */
+    background-color: #50D1AA; 
     border-radius: 50%;
     box-shadow: 0 0 8px #50D1AA; /* Un pequeño brillo */
 }
@@ -356,13 +383,7 @@ header {
     cursor: pointer;
 }
 
-
-
-
-
-
-
-
+/*boton completado*/
 .btn-completed {
     background: linear-gradient(135deg, #FF7E5F, #FEB47B);
     color: white;
@@ -376,14 +397,14 @@ header {
 }
 
 .order-finished {
-    border: 1px solid #50D1AA; /* Verde sutil para indicar éxito */
+    border: 1px solid #50D1AA; 
     transition: 0.5s;
 }
 
-/* Colores específicos para la Vista de Barra */
+/* Colores para la Vista de Barra */
 .bar-view .tab.active, 
 .bar-view .btn-check {
-    background: linear-gradient(135deg, #56CCF2, #2F80ED); /* Azul */
+    background: linear-gradient(135deg, #FFA113, #F4350A); 
     border: none;
 }
 
@@ -397,12 +418,12 @@ header {
     text-transform: uppercase;
 }
 
-.badge-cocina { background-color: #FF7E5F; color: white; } /* Naranja */
-.badge-barra { background-color: #56CCF2; color: white; }   /* Azul */
+.badge-cocina { background-color: #FF7E5F; color: white; } 
+.badge-barra { background-color: #56CCF2; color: white; }  
 
-/* Botón de Cobrar (Verde Dinero) */
+
 .btn-pay {
-    background: linear-gradient(135deg, #42E695, #3BB2B8);
+    background: linear-gradient(45deg, #FFA113, #F4350A);
     color: white;
     border: none;
     padding: 12px;
@@ -417,7 +438,7 @@ header {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    background-color: #1a1c23; /* Color oscuro como tu UI */
+    background-color: #1a1c23; 
     color: white;
 }
 
@@ -434,7 +455,7 @@ header {
 }
 
 .status-badge.completed {
-    background-color: #ff5722; /* El naranja que sale en tu imagen */
+    background: linear-gradient(45deg, #FFA113, #F4350A); 
     color: white;
     padding: 5px 12px;
     border-radius: 15px;
@@ -443,7 +464,7 @@ header {
 }
 
 .status-badge.canceled {
-    background-color: #777777; /* Rojo */
+    background-color: #777777; 
     color: white;
     padding: 5px 8px;
     border-radius: 15px;
@@ -454,7 +475,7 @@ header {
 .order-card.order-canceled {
     border: 3px solid #ff4757 !important;
     background-color: rgba(255, 71, 87, 0.05);
-    animation: flash-red 2s infinite; /* Opcional: para que parpadee */
+    animation: flash-red 2s infinite; 
 }
 
 .cancel-badge {
@@ -474,8 +495,8 @@ header {
 
 /* Clase para la tarjeta cuando está lista */
 .order-card.order-ready {
-    border: 2px solid #32DDFB; /* El cian que usamos en tu proyecto */
-    background-color: rgba(50, 221, 251, 0.05); /* Fondo muy sutil */
+    border: 2px solid #32DDFB; 
+    background-color: rgba(50, 221, 251, 0.05); 
     box-shadow: 0 0 15px rgba(50, 221, 251, 0.2);
 }
 
@@ -506,8 +527,8 @@ header {
 
 /* Estilo para el producto cuando el cocinero lo marca */
 .visual-done {
-    background-color: #f8f9fa; /* Gris muy clarito */
-    border-left: 5px solid #2ecc71; /* Una línea verde a la izquierda */
+    background-color: #f8f9fa; 
+    border-left: 5px solid #2ecc71;
 }
 
 .visual-done h3 {
@@ -570,5 +591,100 @@ header {
     border-radius: 50%;
 }
 
-input:checked + .slider { background-color: #ff4757; } /* Naranja/Rojo Salero */
+#gestion-sala { 
+    border-radius: 10px;
+    margin-top: 20px;
+    display: none; 
+}
+
+.tabla-mesas {
+    background-color: #1A1C23;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tabla-mesas th, .tabla-mesas td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+
+.btn-toggle {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background: #4e4eef;
+    color: white;
+}
+
+.status-open { color: #2ecc71; font-weight: bold; }
+.status-closed { color: #e74c3c; font-weight: bold; }
+
+#gestion-usuarios {
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.card-admin {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn-delete {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    background: #ff6b81;
+    transform: scale(1.05);
+}
+
+/* Contenedor del título y el nombre del camarero */
+.header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Estilo base para el nombre del camarero */
+.order-camarero {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
+    text-transform: uppercase;
+}
+
+/* Cuando nadie ha tomado la mesa aún */
+.order-camarero.pending {
+    background-color: #ffeaa7; 
+    color: #d35400;           
+    border: 1px solid #fab1a0;
+}
+
+/* Cuando ya tiene un camarero asignado */
+.order-camarero.assigned {
+    background-color: #dfe6e9; 
+    color: #2d3436;           
+}
+
+
+
+
+input:checked + .slider { background-color: #F4350A; } 
 input:checked + .slider:before { transform: translateX(24px); }

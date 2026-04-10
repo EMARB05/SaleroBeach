@@ -17,8 +17,12 @@
                 <ul>
                     <li class="active" onclick="mostrarHome()" id="btn-home"><i class="fas fa-utensils"></i> HOME</li>
                     <li onclick="mostrarHistorial()" id="btn-history"><i class="fas fa-history"></i> HISTORY</li>
+                    <li onclick="mostrarGestionUsuarios()" id="btn-usuarios-nav">
+                        <i class="fas fa-users-cog"></i> Personal
+                    </li>
                     <li onclick="mostrarGestionProductos()" id="btn-barra"><i
                             class="fas fa-glass-martini-alt"></i>PRODUCTS</li>
+                    <li onclick="mostrarGestionMesas()" id="btn-mesas"><i class="fas fa-border-all"></i> TABLES</li>
                 </ul>
             </nav>
             <div class="status-container">
@@ -72,8 +76,69 @@
                 <div class="products-admin-grid" id="products-admin-list">
                 </div>
             </div>
+
+            <section id="gestion-sala" class="admin-section">
+                <div>
+                    <h2>⚙️ Configuración de Mesas</h2>
+                </div>
+
+                <div class="controles-rapidos">
+                    <input type="text" id="nuevo-num-mesa" placeholder="Nº Mesa (ej: 1+2)">
+                    <select id="nueva-zona-mesa">
+                        <option value="terraza">Terraza</option>
+                        <option value="interior">Interior</option>
+                    </select>
+                    <button onclick="crearNuevaMesa()" class="btn-add">➕ Añadir Mesa</button>
+                </div>
+
+                <table class="tabla-mesas">
+                    <thead>
+                        <tr>
+                            <th>Mesa</th>
+                            <th>Zona</th>
+                            <th>Estado Visible</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-gestion-mesas">
+                        <!-- Se llena con js -->
+                    </tbody>
+                </table>
+            </section>
+         <section id="gestion-usuarios" class="admin-section" style="display: none;">
+                <div class="header-section">
+                    <h2>👥 Gestión de Personal (Staff)</h2>
+                    <p>Añade, elimina o actualiza las credenciales del equipo.</p>
+                </div>
+
+                <div class="controles-rapidos card-admin">
+                    <input type="text" id="user-nombre" placeholder="Nombre Real (Ej: Juan Pérez)">
+                    <input type="text" id="user-login" placeholder="Usuario de acceso">
+                    <input type="password" id="user-pass" placeholder="Nueva Contraseña">
+                    <select id="user-rol">
+                        <option value="camarero">Camarero</option>
+                        <option value="cocinero">Cocinero</option>
+                        <option value="barra">Administrador (Barra)</option>
+                    </select>
+                    <button onclick="crearNuevoUsuario()" class="btn-add">➕ Guardar Usuario</button>
+                </div>
+
+                <table class="tabla-mesas">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario (ID)</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-usuarios-body">
+                    </tbody>
+                </table>
+            </section>
         </main>
     </div>
+    
 
     <script src="./js/javascript.js"></script>
 </body>

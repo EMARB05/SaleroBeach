@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Terminal Camarero - Salero Beach</title>
+    <link rel="stylesheet" href="css/camarero.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="waiter-terminal">
+
+   <section id="screen-tables">
+        <header class="waiter-header">
+            <h1>Salero <span class="orange">Beach</span></h1>
+            <p>Panel de Sala</p>
+        </header>
+
+        <div class="zona-wrapper">
+            <!-- SECCIÓN TERRAZA CON DESPLEGABLE -->
+            <div class="collapsible-header" onclick="toggleSeccion('contenedor-terraza', this)">
+                <div class="header-left">
+                    <img src="img/terraza.png" class="section-icon" alt="⛱️">
+                    <h2 class="gradient-text">TERRAZA</h2>
+                </div>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="grid-mesas collapsible-content" id="contenedor-terraza">
+              
+            </div>
+
+            <!-- SECCIÓN INTERIOR CON DESPLEGABLE -->
+            <div class="collapsible-header" onclick="toggleSeccion('contenedor-interior', this)">
+                <div class="header-left">
+                    <img src="./img/interior.png" class="section-icon" alt="🏠">
+                    <h2 class="gradient-text">INTERIOR</h2>
+                </div>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="grid-mesas collapsible-content" id="contenedor-interior">
+                <!-- Se llena vía JS -->
+            </div>
+        </div>
+
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Salir
+        </button>
+    </section>
+
+    <!-- PANTALLA DETALLE DE MESA -->
+    <section id="screen-order-detail" style="display: none;">
+        <div class="detail-header">
+            <button class="btn-back" onclick="showTables()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2 id="current-table-title">Mesa 0</h2>
+        </div>
+
+        <div id="order-content" class="order-content">
+            <!-- Se llena vía JS -->
+        </div>
+
+        <div class="waiter-actions">
+            <button class="action-btn add" onclick="abrirModalProductos()">
+                <i class="fas fa-plus"></i> AÑADIR
+            </button>
+            <button class="action-btn pay" id="btn-cobrar-fast" onclick="cobrarMesaActual()">
+                <i class="fas fa-euro-sign"></i> COBRAR
+            </button>
+        </div>
+    </section>
+
+    <!-- MODAL DE PRODUCTOS -->
+    <div id="modal-products" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h3>Añadir a la cuenta</h3>
+            <div class="categories-filter">
+                <button class="cat-btn active" onclick="filtrarProductos('todos')">Todos</button>
+                <button class="cat-btn" onclick="filtrarProductos('Food')">Comida</button>
+                <button class="cat-btn" onclick="filtrarProductos('Drinks')">Bebidas</button>
+                <button class="cat-btn" onclick="filtrarProductos('Salads')">Ensaladas</button>
+                <button class="cat-btn" onclick="filtrarProductos('Desserts')">Postres</button>
+                <button class="cat-btn" onclick="filtrarProductos('Wines')">Vinos</button>
+            </div>
+            <div id="quick-products-list" class="quick-list">
+                <!-- Se llena vía JS -->
+            </div>
+        </div>
+    </div>
+    <!-- Modal de la cuenta -->
+<div id="modal-factura" class="modal">
+    <div class="modal-content ticket-style">
+        <span class="close" onclick="cerrarModalFactura()">&times;</span>
+        <div class="ticket-logo-container">
+            <img src="./img/logo-ticket.png" class="ticket-logo" alt="Salero Beach">
+        </div>
+        <h2 class="ticket-title">SALERO BEACH</h2>
+        <p class="ticket-subtitle">Resumen de cuenta - Mesa <span id="factura-mesa"></span></p>
+        <hr>
+        <div id="factura-items" class="ticket-items">
+            <!-- Se llena con JS -->
+        </div>
+        <hr>
+        <div class="ticket-total">
+            <span>TOTAL:</span>
+            <span id="factura-total-monto">0.00€</span>
+        </div>
+        <button class="confirm-pay-btn" onclick="confirmarPagoFinal()">
+            <i class="fas fa-check"></i> CONFIRMAR Y PAGAR
+        </button>
+    </div>
+</div>
+
+    <script src="./js/camarero.js"></script>
+</body>
+</html>

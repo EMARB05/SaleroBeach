@@ -2,11 +2,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const mesaActual = urlParams.get('mesa') || 'Barra';
 
-// Opcional: Mostrar un mensaje de bienvenida
-console.log("Sistema Salero: Detectada Mesa " + mesaActual);
-// Puedes poner un alert o un texto en el HTML:
-// document.getElementById('info-mesa').innerText = "Mesa: " + mesaActual;
-
 
 let productos = [];
 let carrito = [];

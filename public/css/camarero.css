@@ -1,0 +1,440 @@
+:root {
+    --bg-dark: #1F1D2B;
+    --card-dark: #1e1e1e;
+    --orange: #ff6b00;
+    --green: #2ecc71;
+    --text-white: #ffffff;
+}
+
+body.waiter-terminal {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 20px;
+    -webkit-tap-highlight-color: transparent; 
+}
+
+/* Cabecera */
+.waiter-header { text-align: center; margin-bottom: 30px; }
+.orange { color: var(--orange); }
+
+/* Grid de Mesas */
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.mesa-btn {
+    height: 100px;
+    background: var(--card-dark);
+    border: 2px solid #333;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.mesa-btn.ocupada {
+    border-color: var(--orange);
+    background: rgba(255, 107, 0, 0.1);
+    color: var(--orange);
+}
+
+.mesa-btn.libre {
+    border-color: var(--green);
+    color: var(--green);
+}
+
+.mesa-btn:active { transform: scale(0.95); }
+
+/* Detalle de Mesa */
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    background: none;
+    border: 1px solid #555;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Acciones fijas abajo */
+.waiter-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    padding: 15px;
+    gap: 10px;
+    background: rgba(18, 18, 18, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.action-btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.action-btn.add { background-color: var(--orange); color: white; }
+.action-btn.pay { background-color: var(--green); color: white; }
+
+/* Botón salir */
+.btn-logout {
+    width: 100%;
+    padding: 12px;
+    background: #333;
+    border: none;
+    color: #999;
+    border-radius: 10px;
+}
+.zona-wrapper {
+    padding: 10px;
+    padding-bottom: 80px; /* Espacio para que el botón de salir no tape mesas */
+}
+
+.zona-header {
+    background: #252833;
+    color: #FE9315;
+    padding: 12px;
+    margin: 15px 0 10px 0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.grid-mesas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en móvil */
+    gap: 10px;
+}
+
+.mesa {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    border: 2px solid;
+    background: #1a1c23;
+    transition: 0.2s;
+}
+
+.mesa-numero {
+    font-size: 1.5rem; /* Número grande y claro */
+    font-weight: bold;
+    line-height: 1;
+}
+
+.mesa-estado {
+    font-size: 0.65rem;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+.modal {
+    display: none; /* Esto lo mantiene escondido hasta que pulses AÑADIR */
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9); /* Fondo oscuro transparente */
+}
+/* El contenedor blanco/oscuro donde aparecen los productos */
+.modal-content {
+    background-color: #1a1c23;
+    margin: 5% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 15px;
+    position: relative;
+    max-height: 85vh; /* Evita que se salga de la pantalla */
+    overflow-y: auto;  /* Permite hacer scroll si hay muchos platos */
+}
+
+/* La 'X' para cerrar, puesta arriba a la derecha */
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #888;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* El título 'Añadir a la cuenta' */
+.modal-content h3 {
+    color: #FE9315;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+/* La lista de productos en 2 columnas para que quepan más */
+.quick-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos platos por fila */
+    gap: 15px;
+}
+
+/* Cada tarjeta de producto (como la del pulpo) */
+.product-card-mini {
+    background: #252833;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #444;
+}
+
+.product-card-mini img {
+    width: 100%;       /* Se adapta al ancho de la columna */
+    height: 100px;     /* Altura fija para que todas sean iguales */
+    object-fit: cover; /* Corta la imagen para que no se deforme */
+    border-radius: 8px;
+}
+
+.product-card-mini h4 {
+    font-size: 0.9rem;
+    margin: 10px 0 5px 0;
+    color: white;
+}
+
+.product-card-mini span {
+    color: #FE9315;
+    font-weight: bold;
+}
+
+.categories-filter {
+    display: flex;
+    overflow-x: auto; /* Scroll horizontal si hay muchas categorías */
+    gap: 10px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+}
+
+/* Ocultar la barra de scroll para que se vea más limpio */
+.categories-filter::-webkit-scrollbar { display: none; }
+
+.cat-btn {
+    background: #252833;
+    color: white;
+    border: 1px solid #444;
+    padding: 8px 15px;
+    border-radius: 20px;
+    white-space: nowrap; 
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.cat-btn.active {
+    background: var(--orange); /* Tu naranja de Salero Beach */
+    border-color: var(--orange);
+    font-weight: bold;
+}
+/* Estilo del Header Desplegable */
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #1f212a;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* El texto degradado */
+.gradient-text {
+    font-size: 1.2rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #FFA113, #F4350A); /* Amarillo a Naranja */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.arrow {
+    color: #FE9315;
+    transition: transform 0.3s;
+}
+
+
+.rotate { transform: rotate(-90deg); }
+
+/* Para que las mesas salgan en grid cuando se muestren */
+.collapsible-content {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    padding: 15px 0;
+}
+
+.ticket-style {
+    background: #fff;
+    color: #333;
+    font-family: 'Courier New', Courier, monospace; /* Fuente tipo ticket */
+    padding: 20px;
+    max-width: 350px;
+    border-radius: 0; /* Los tickets no son redondos */
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.ticket-title { text-align: center; margin-bottom: 5px; color: #000; }
+.ticket-subtitle { text-align: center; font-size: 0.9em; margin-bottom: 20px; }
+
+.ticket-item-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+.ticket-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px 0;
+}
+
+.confirm-pay-btn {
+    width: 100%;
+    background: #27ae60;
+    color: white;
+    padding: 15px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+/* Contenedor del logo para centrarlo */
+.ticket-logo-container {
+    text-align: center;
+    margin-bottom: 15px; /* Separación con el título */
+    padding-top: 10px;
+}
+
+/* El logo en sí: Tamaño y estilo de ticket */
+.ticket-logo {
+    max-width: 120px;   
+    height: auto;     
+    
+    
+    filter: grayscale(100%) contrast(150%);
+    opacity: 0.9;       
+}
+
+/* Pequeño ajuste al título para que no quede pegado */
+.ticket-title {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.total-preview {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-top: 2px dashed #ddd;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2em;
+    color: #333;
+}
+.total-preview strong {
+    color: #e67e22;
+}
+
+
+/* Contenedor base del banner */
+.banner-asignacion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Estado: Nadie ha tomado la mesa (QR) */
+.banner-asignacion.pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* Estado: La mesa es del camarero actual */
+.banner-asignacion.propia {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Estado: La mesa es de otro compañero */
+.banner-asignacion.ajena {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+/* Botón de acción dentro del banner */
+.btn-tomar-mesa {
+    background-color: #ff8c00; 
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    transition: background 0.3s;
+}
+
+.btn-tomar-mesa:hover {
+    background-color: #e67e00;
+}
+
+
+/* Colores de estado */
+.libre { border-color: #2ecc71; color: #2ecc71; }
+.ocupada { border-color: #e67e22; color: #e67e22; background: #e67e2222; }

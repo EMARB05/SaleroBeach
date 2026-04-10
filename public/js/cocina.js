@@ -1,8 +1,10 @@
 // --- PROTECCIÓN DE SESIÓN ---
-(function comprobarSesionCocina() {
+(function comprobarSesion() {
     const usuario = localStorage.getItem('usuarioNombre');
-    if (!usuario) {
-        // Si no hay sesión, al login
+    const rol = localStorage.getItem('usuarioRol');
+
+    // Si no hay usuario O el rol no es 'cocina', lo echamos
+    if (!usuario || rol !== 'cocinero') {
         window.location.href = 'login.html';
     }
 })();
@@ -66,7 +68,7 @@ function renderizarPedidosCocina(filtroId = null) {
                 
                 <div class="product-list">
                     ${soloComida.map(item => {
-                        // REVISIÓN: Aseguramos que la llave use el _id único
+                        //Aseguramos que la llave use el _id único
                         const llave = `check-${pedido.mongoId}-${item._id}`; 
                         const estaHecho = localStorage.getItem(llave) === 'true';
 
@@ -120,7 +122,7 @@ function mostrarSeccion(nombreSeccion) {
         cargarHistorialCocina();
     }
 
-    // Lógica del brillo de los botones (el resto igual...)
+    //brillo de los botones
     botones.forEach(boton => {
         boton.classList.remove('active');
         const texto = boton.innerText.toUpperCase();
@@ -129,11 +131,10 @@ function mostrarSeccion(nombreSeccion) {
     });
 }
 async function completarPedido(idCorto) {
-    // 1. Buscamos el pedido para obtener el mongoId antes de borrar nada
     const pedido = todasLasComandas.find(p => p.id === idCorto);
     if (!pedido) return;
 
-    // 2. Limpieza de localStorage usando el mongoId para ser precisos
+    // Limpieza de localStorage
     Object.keys(localStorage).forEach(key => {
         if (key.startsWith(`check-${pedido.mongoId}`)) {
             localStorage.removeItem(key);
@@ -141,8 +142,11 @@ async function completarPedido(idCorto) {
     });
 
     try {
-        const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/completar`, {
-            method: 'PATCH'
+        // Usamos la ruta /estado
+        const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/estado`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado: 'Listo' }) 
         });
 
         if (respuesta.ok) {
@@ -151,7 +155,7 @@ async function completarPedido(idCorto) {
                 tarjeta.classList.add('order-finished');
                 const btnCont = tarjeta.querySelector('.card-buttons');
                 if (btnCont) {
-                    btnCont.innerHTML = `<button class="btn-completed">✔ COMPLETADO</button>`;
+                    btnCont.innerHTML = `<button class="btn-completed">✔ ENVIADO A BARRA</button>`;
                 }
 
                 setTimeout(() => {
@@ -160,7 +164,7 @@ async function completarPedido(idCorto) {
                         tarjeta.remove();
                         todasLasComandas = todasLasComandas.filter(p => p.id !== idCorto);
                     }, 300);
-                }, 1000);
+                }, 800);
             }
         }
     } catch (error) {
@@ -169,24 +173,24 @@ async function completarPedido(idCorto) {
 }
 async function obtenerPedidosCocina() {
     try {
-        // 1. Traemos TODOS los pedidos activos (Pendientes y Listos)
+        // Traemos TODOS los pedidos activos (Pendientes y Listos)
         const respuesta = await fetch('/api/pedidos/pendientes'); 
         const datos = await respuesta.json();
         
-        // 2. FILTROOO ,El cocinero solo quiere ver lo que falta por hacer
+        // FILTROOO,El cocinero solo quiere ver lo que falta por hacer
         const soloParaCocina = datos.filter(p => p.estado === 'Pendiente');
 
-        // 3. Mapeamos solo esos pedidos pendientes
+        // Mapeamos solo esos pedidos pendientes
         todasLasComandas = soloParaCocina.map(p => ({
             id: p._id.slice(-3),
             mongoId: p._id,
             mesa: p.mesa || "Barra",
             articulos: p.items,
             fecha: p.fecha,
-            estado: p.estado // Guardamos el estado por si acaso
+            estado: p.estado 
         }));
         
-        // 4. Dibujamos las tarjetas en la pantalla
+        // llamo a la funcion para mostrar las tarjetas en la pantalla.
         renderizarPedidosCocina();
 
     } catch (error) {
@@ -201,16 +205,21 @@ async function cancelarPedido(idCorto) {
     if (!pedido) return;
 
     try {
-        const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/cancelar`, {
-            method: 'PATCH'
+        const respuesta = await fetch(`/api/pedidos/${pedido.mongoId}/estado`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado: 'Cancelado' }) 
         });
 
         if (respuesta.ok) {
             // Refrescamos inmediatamente para que desaparezca
             obtenerPedidosCocina();
+            console.log(`Pedido ${idCorto} cancelado. Aparecerá en rojo en Barra.`);
+        } else {
+            alert("No se pudo cancelar el pedido en el servidor.");
         }
     } catch (error) {
-        console.error("Error al cancelar:", error);
+        console.error("Error al cancelar desde cocina:", error);
     }
 }
 
@@ -230,12 +239,12 @@ async function cargarHistorialCocina() {
     try {
         const respuesta = await fetch('/api/pedidos/historial');
         const historial = await respuesta.json();
-        const tbody = document.getElementById('history-body-cocina'); // <--- Mira que el ID sea correcto en tu HTML
+        const tbody = document.getElementById('history-body-cocina');
         
         if (!tbody) return;
 
         tbody.innerHTML = historial.map(pedido => {
-            // Agrupamos para que no salgan 20 líneas si pidió 20 croquetas
+            // Agrupamos
             const agrupados = pedido.items.reduce((acc, item) => {
                 const existe = acc.find(a => a.nombre === item.nombre);
                 if (existe) existe.cantidad += 1;
